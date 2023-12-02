@@ -2,6 +2,8 @@
 
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sellers/constants/constants.dart';
 import 'package:sellers/controllers/firebase_firestore_helper.dart';
@@ -9,8 +11,96 @@ import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/models/order_model.dart';
 import 'package:sellers/models/product_model.dart';
 import 'package:sellers/models/user_model.dart';
+import 'package:sellers/screens/outp_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppProvider with ChangeNotifier {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  bool _isSignedIn = false;
+  bool get isSignedIn => _isSignedIn;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  String? _userId;
+  String get userId => _userId!;
+
+  AppProvider() {
+    checkSignIn();
+  }
+  void checkSignIn() async {
+    final SharedPreferences sign = await SharedPreferences.getInstance();
+    _isSignedIn = sign.getBool('is_signedIn') ?? false;
+    notifyListeners();
+  }
+
+  void signInWithPhone(BuildContext context, String phoneNumber) async {
+    try {
+      await _firebaseAuth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (
+          PhoneAuthCredential phoneAuthCredntial,
+        ) async {
+          await _firebaseAuth.signInWithCredential(phoneAuthCredntial);
+        },
+        verificationFailed: (error) {
+          throw Exception(error.message);
+        },
+        codeSent: (VerificationId, forceResendingToken) {
+          Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (BuildContext context) => AutpScreen(
+                VerificationId: VerificationId,
+              ),
+            ),
+          );
+        },
+        codeAutoRetrievalTimeout: (verificationId) {},
+      );
+    } on FirebaseAuthException catch (e) {
+      showMessage(e.toString());
+    }
+  }
+
+  void verifyOtp(
+      {required String verificationId,
+      required String userOtp,
+      required Function onSuccess}) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          verificationId: verificationId, smsCode: userOtp);
+      User user = (await _firebaseAuth.signInWithCredential(credential)).user!;
+
+      if (user != null) {
+        _userId = user.uid;
+        onSuccess();
+      }
+      _isLoading = false;
+      notifyListeners();
+    } on FirebaseAuthException catch (e) {
+      showMessage(e.toString());
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> checkExistingUser() async {
+    DocumentSnapshot snapshot =
+        await _firebaseFirestore.collection('sellers').doc(_userId).get();
+    if (snapshot.exists) {
+      print('User exist');
+      return true;
+    } else {
+      print('New User');
+      return false;
+    }
+  }
+
+  ///////////////////////////////
+
   List<UserModel> _userList = [];
   List<CategoryModel> _categoryList = [];
   List<ProductModel> _productlist = [];
@@ -163,8 +253,8 @@ class AppProvider with ChangeNotifier {
     // bool isFavorite,
   ) async {
     ProductModel productModel = await FirebaseFirestoreHelper.instance
-        .addSingleProduct(image, name, categoryId, description, price,
-            discount , quantity , size , measurement);
+        .addSingleProduct(image, name, categoryId, description, price, discount,
+            quantity, size, measurement);
 
     _productlist.add(productModel);
     notifyListeners();

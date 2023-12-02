@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +5,8 @@ import 'package:sellers/constants/theme.dart';
 import 'package:sellers/firebase_options.dart';
 import 'package:sellers/provider/app_provider.dart';
 import 'package:sellers/screens/home_page.dart';
+import 'package:sellers/screens/login.dart';
+import 'package:sellers/screens/welcome_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Dashboard',
         theme: themeData,
-        home: const HomePage(),
+        home: const WelcomeScreen(),
       ),
     );
   }
