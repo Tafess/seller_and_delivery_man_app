@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sellers/constants/routes.dart';
+import 'package:sellers/controllers/firebase_auth_helper.dart';
+import 'package:sellers/models/seller_model.dart';
 import 'package:sellers/provider/app_provider.dart';
 import 'package:sellers/screens/category_view.dart';
 import 'package:sellers/screens/completed_order_list.dart';
@@ -39,11 +41,21 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    //AppProvider appProvider = Provider.of<AppProvider>(context, listen: false);
+    // FirebaseAuthHelper authHelper = FirebaseAuthHelper();
     AppProvider appProvider = Provider.of<AppProvider>(context);
+    SellerModel sellerInformation = appProvider.getSellerInformation;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+              },
+              icon: Icon(Icons.logout))
+        ],
       ),
       body: isloading
           ? const Center(
@@ -64,8 +76,8 @@ class _HomePageState extends State<HomePage> {
                         SizedBox(width: 20),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text('Admin Name'),
+                          children: [
+                            Text(sellerInformation.email),
                             Text('admin@gmail.com'),
                           ],
                         ),

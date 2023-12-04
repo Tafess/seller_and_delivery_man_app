@@ -1,12 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sellers/constants/theme.dart';
+import 'package:sellers/controllers/firebase_firestore_helper.dart';
 import 'package:sellers/firebase_options.dart';
 import 'package:sellers/provider/app_provider.dart';
 import 'package:sellers/screens/home_page.dart';
 import 'package:sellers/screens/login.dart';
 import 'package:sellers/screens/welcome_screen.dart';
+import 'controllers/firebase_auth_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,18 +21,31 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<AppProvider>(
-      create: (context) => AppProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppProvider()),
+        Provider<FirebaseAuthHelper>(
+            create: (_) => FirebaseAuthHelper.instance),
+        Provider<FirebaseFirestoreHelper>(
+            create: (_) => FirebaseFirestoreHelper.instance),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Dashboard',
         theme: themeData,
-        home: const WelcomeScreen(),
+        home: StreamBuilder(
+            stream: FirebaseAuthHelper.instance.getAuthChange,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return const LoginScreen();
+              } else {
+                return const WelcomeScreen();
+              }
+            }),
       ),
     );
   }

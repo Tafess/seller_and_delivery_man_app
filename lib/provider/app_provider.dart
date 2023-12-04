@@ -10,98 +10,105 @@ import 'package:sellers/controllers/firebase_firestore_helper.dart';
 import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/models/order_model.dart';
 import 'package:sellers/models/product_model.dart';
-import 'package:sellers/models/user_model.dart';
+import 'package:sellers/models/seller_model.dart';
 import 'package:sellers/screens/outp_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppProvider with ChangeNotifier {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  bool _isSignedIn = false;
-  bool get isSignedIn => _isSignedIn;
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-  String? _userId;
-  String get userId => _userId!;
+  // final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  // final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  // bool _isSignedIn = false;
+  // bool get isSignedIn => _isSignedIn;
+  // bool _isLoading = false;
+  // bool get isLoading => _isLoading;
+  // String? _userId;
+  // String get userId => _userId!;
 
-  AppProvider() {
-    checkSignIn();
-  }
-  void checkSignIn() async {
-    final SharedPreferences sign = await SharedPreferences.getInstance();
-    _isSignedIn = sign.getBool('is_signedIn') ?? false;
-    notifyListeners();
-  }
+  // AppProvider() {
+  //   checkSignIn();
+  // }
+  // void checkSignIn() async {
+  //   final SharedPreferences sign = await SharedPreferences.getInstance();
+  //   _isSignedIn = sign.getBool('is_signedIn') ?? false;
+  //   notifyListeners();
+  // }
 
-  void signInWithPhone(BuildContext context, String phoneNumber) async {
-    try {
-      await _firebaseAuth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (
-          PhoneAuthCredential phoneAuthCredntial,
-        ) async {
-          await _firebaseAuth.signInWithCredential(phoneAuthCredntial);
-        },
-        verificationFailed: (error) {
-          throw Exception(error.message);
-        },
-        codeSent: (VerificationId, forceResendingToken) {
-          Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (BuildContext context) => AutpScreen(
-                VerificationId: VerificationId,
-              ),
-            ),
-          );
-        },
-        codeAutoRetrievalTimeout: (verificationId) {},
-      );
-    } on FirebaseAuthException catch (e) {
-      showMessage(e.toString());
-    }
-  }
+  // void signInWithPhone(BuildContext context, String phoneNumber) async {
+  //   try {
+  //     await _firebaseAuth.verifyPhoneNumber(
+  //       phoneNumber: phoneNumber,
+  //       verificationCompleted: (
+  //         PhoneAuthCredential phoneAuthCredntial,
+  //       ) async {
+  //         await _firebaseAuth.signInWithCredential(phoneAuthCredntial);
+  //       },
+  //       verificationFailed: (error) {
+  //         throw Exception(error.message);
+  //       },
+  //       codeSent: (VerificationId, forceResendingToken) {
+  //         Navigator.push(
+  //           context,
+  //           MaterialPageRoute<void>(
+  //             builder: (BuildContext context) => AutpScreen(
+  //               VerificationId: VerificationId,
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //       codeAutoRetrievalTimeout: (verificationId) {},
+  //     );
+  //   } on FirebaseAuthException catch (e) {
+  //     showMessage(e.toString());
+  //   }
+  // }
 
-  void verifyOtp(
-      {required String verificationId,
-      required String userOtp,
-      required Function onSuccess}) async {
-    _isLoading = true;
-    notifyListeners();
+  // void verifyOtp(
+  //     {required String verificationId,
+  //     required String userOtp,
+  //     required Function onSuccess}) async {
+  //   _isLoading = true;
+  //   notifyListeners();
 
-    try {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-          verificationId: verificationId, smsCode: userOtp);
-      User user = (await _firebaseAuth.signInWithCredential(credential)).user!;
+  //   try {
+  //     PhoneAuthCredential credential = PhoneAuthProvider.credential(
+  //         verificationId: verificationId, smsCode: userOtp);
+  //     User user = (await _firebaseAuth.signInWithCredential(credential)).user!;
 
-      if (user != null) {
-        _userId = user.uid;
-        onSuccess();
-      }
-      _isLoading = false;
-      notifyListeners();
-    } on FirebaseAuthException catch (e) {
-      showMessage(e.toString());
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
+  //     if (user != null) {
+  //       _userId = user.uid;
+  //       onSuccess();
+  //     }
+  //     _isLoading = false;
+  //     notifyListeners();
+  //   } on FirebaseAuthException catch (e) {
+  //     showMessage(e.toString());
+  //     _isLoading = false;
+  //     notifyListeners();
+  //   }
+  // }
 
-  Future<bool> checkExistingUser() async {
-    DocumentSnapshot snapshot =
-        await _firebaseFirestore.collection('sellers').doc(_userId).get();
-    if (snapshot.exists) {
-      print('User exist');
-      return true;
-    } else {
-      print('New User');
-      return false;
-    }
-  }
+  // Future<bool> checkExistingUser() async {
+  //   DocumentSnapshot snapshot =
+  //       await _firebaseFirestore.collection('sellers').doc(_userId).get();
+  //   if (snapshot.exists) {
+  //     print('User exist');
+  //     return true;
+  //   } else {
+  //     print('New User');
+  //     return false;
+  //   }
+  // }
 
   ///////////////////////////////
 
-  List<UserModel> _userList = [];
+  void getSellerInfoFirebase() async {
+    _sellerModel =
+        await FirebaseFirestoreHelper.instance.getSellerInformation();
+    notifyListeners();
+  }
+
+  SellerModel? _sellerModel;
+  List<SellerModel> _userList = [];
   List<CategoryModel> _categoryList = [];
   List<ProductModel> _productlist = [];
   List<OrderModel> _completedOrders = [];
@@ -146,19 +153,19 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteUserFromFirebase(UserModel userModel) async {
+  Future<void> deleteUserFromFirebase(SellerModel SellerModel) async {
     notifyListeners();
     String value =
-        await FirebaseFirestoreHelper.instance.deleteSingleUser(userModel.id);
+        await FirebaseFirestoreHelper.instance.deleteSingleUser(SellerModel.id);
 
     if (value == 'Successfully deleted') {
-      _userList.remove(userModel);
+      _userList.remove(SellerModel);
       showMessage('User deleted successfully');
     }
     notifyListeners();
   }
 
-  List<UserModel> get getUserList => _userList;
+  List<SellerModel> get getUserList => _userList;
   double get getTotalEarnings => _totalEarning;
   List<CategoryModel> get getCategoryList => _categoryList;
   List<ProductModel> get getProducts => _productlist;
@@ -166,6 +173,7 @@ class AppProvider with ChangeNotifier {
   List<OrderModel> get getPendingOrderList => _pendingOrders;
   List<OrderModel> get getCanceledOrderList => _canceledOrders;
   List<OrderModel> get getDeliveryOrderList => _deliveryOrders;
+  SellerModel get getSellerInformation => _sellerModel!;
 
   Future<void> callBackFunction() async {
     await getUserListFunction();
@@ -175,13 +183,14 @@ class AppProvider with ChangeNotifier {
     await getPendingOrders();
     await getCanceledOrders();
     await getDeliveryOrders();
+    //await getSellerInfoFirebase();
   }
 
-  void updateUserList(int index, UserModel userModel) async {
-    await FirebaseFirestoreHelper.instance.updateUser(userModel);
+  void updateUserList(int index, SellerModel sellerModel) async {
+    await FirebaseFirestoreHelper.instance.updateUser(sellerModel);
 
-    // int index=_userList.indexOf(userModel);
-    _userList[index] = userModel;
+    // int index=_userList.indexOf(SellerModel);
+    _userList[index] = sellerModel;
     notifyListeners();
   }
 
@@ -302,7 +311,7 @@ class AppProvider with ChangeNotifier {
 // import 'package:sellers/models/user_model.dart';
 
 // class AppProvider with ChangeNotifier {
-//   final BehaviorSubject<List<UserModel>> _userListController =
+//   final BehaviorSubject<List<SellerModel>> _userListController =
 //       BehaviorSubject<List<UserModel>>();
 //   final BehaviorSubject<List<CategoryModel>> _categoryListController =
 //       BehaviorSubject<List<CategoryModel>>();

@@ -2,7 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sellers/models/user_model.dart';
+import 'package:sellers/models/seller_model.dart';
 import 'package:sellers/provider/app_provider.dart';
 import 'package:sellers/widgets/single_user_card.dart';
 
@@ -21,10 +21,10 @@ class UserViewScreen extends StatelessWidget {
             itemCount: value.getUserList.length,
             padding: const EdgeInsets.all(8),
             itemBuilder: (context, index) {
-              UserModel userModel = value.getUserList[index];
+              SellerModel sellerModel = value.getUserList[index];
               return SingleUserCard(
                 index: index,
-                userModel: userModel,
+                sellerModel: sellerModel,
               );
             });
       }),

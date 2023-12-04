@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,18 +9,51 @@ import 'package:sellers/controllers/firebase_storage_helper.dart';
 import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/models/order_model.dart';
 import 'package:sellers/models/product_model.dart';
-import 'package:sellers/models/user_model.dart';
+import 'package:sellers/models/seller_model.dart';
 
 class FirebaseFirestoreHelper {
   static FirebaseFirestoreHelper instance = FirebaseFirestoreHelper();
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  //final FirebaseAuth _auth = FirebaseAuth.instance;
 
   /////////////////////////////////////////////////////
-  Future<List<UserModel>> getUserList() async {
+  Future<SellerModel> getSellerInformation() async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> querySnapshot =
+          await _firebaseFirestore
+              .collection('sellers')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .get();
+      return SellerModel.fromJson(querySnapshot.data()!);
+    } catch (e) {
+      print('Error retrieving seller information: $e');
+      // Handle the error or return a default SellerModel
+      return SellerModel(
+        approved: false,
+        id: FirebaseAuth.instance.currentUser!.uid,
+        firstName: 'Tafesse',
+        middleName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        country: '',
+        region: '',
+        city: '',
+        zone: '',
+        woreda: '',
+        kebele: '',
+        idCard: '',
+        profilePhoto: '',
+      );
+    }
+  }
+
+  Future<List<SellerModel>> getUserList() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
         await _firebaseFirestore.collection('users').get();
-    return querySnapshot.docs.map((e) => UserModel.fromJson(e.data())).toList();
+    return querySnapshot.docs
+        .map((e) => SellerModel.fromJson(e.data()))
+        .toList();
   }
 
   Future<List<CategoryModel>> getcategories() async {
@@ -47,12 +79,12 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<void> updateUser(UserModel userModel) async {
+  Future<void> updateUser(SellerModel sellerModel) async {
     try {
       await _firebaseFirestore
           .collection('users')
-          .doc(userModel.id)
-          .update(userModel.toJson());
+          .doc(sellerModel.id)
+          .update(sellerModel.toJson());
     } catch (e) {}
   }
 
@@ -153,7 +185,7 @@ class FirebaseFirestoreHelper {
 
     admin.set({
       'productId': admin.id,
-      'sellerId': "sellerId",
+      'sellerId': FirebaseAuth.instance.currentUser!.uid,
     });
     String imageUrl = await FirebaseStorageHelper.instance
         .uploadUserImage(reference.id, image);

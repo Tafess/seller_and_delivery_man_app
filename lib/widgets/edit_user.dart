@@ -9,19 +9,19 @@ import 'package:provider/provider.dart';
 import 'package:sellers/constants/constants.dart';
 import 'package:sellers/constants/primary_button.dart';
 import 'package:sellers/controllers/firebase_storage_helper.dart';
-import 'package:sellers/models/user_model.dart';
+import 'package:sellers/models/seller_model.dart';
 import 'package:sellers/provider/app_provider.dart';
 
-class EditUser extends StatefulWidget {
-  final UserModel userModel;
+class EditSeller extends StatefulWidget {
+  final SellerModel sellerModel;
   final int index;
-  const EditUser({super.key, required this.userModel, required this.index});
+  const EditSeller({super.key, required this.sellerModel, required this.index});
 
   @override
-  State<EditUser> createState() => _EditUserState();
+  State<EditSeller> createState() => _EditSellerState();
 }
 
-class _EditUserState extends State<EditUser> {
+class _EditSellerState extends State<EditSeller> {
   File? image;
   void takePicture() async {
     XFile? value = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -40,7 +40,7 @@ class _EditUserState extends State<EditUser> {
       context,
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('User edit')),
+      appBar: AppBar(title: const Text('Account edit')),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
         children: [
@@ -66,35 +66,36 @@ class _EditUserState extends State<EditUser> {
             decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                hintText: widget.userModel.name),
+                hintText: widget.sellerModel.firstName),
           ),
           const SizedBox(height: 20),
           SizedBox(
-              child: PrimaryButton(
-                  onPressed: () async {
-                    if (image == null && name.text.isEmpty) {
-                      Navigator.of(context).pop();
-                    } else if (image != null) {
-                      String imageUrl = await FirebaseStorageHelper.instance
-                          .uploadUserImage(widget.userModel.id, image!);
-                      UserModel userModel = widget.userModel.copyWith(
-                        image: imageUrl,
-                        name: name.text.isEmpty ? null : name.text,
-                      );
-                      appProvider.updateUserList(widget.index, userModel);
-                      showMessage('user successfuly updated');
-                    } else {
-                      UserModel userModel = widget.userModel.copyWith(
-                        name: name.text.isEmpty ? null : name.text,
-                      );
-                      appProvider.updateUserList(widget.index, userModel);
-                      showMessage('user successfuly updated');
-                    }
-                    Navigator.of(context).pop();
-                    //   appProvider.updateUserInfoFirebase(
-                    //   context, userModel, image);
-                  },
-                  title: 'Update'))
+              //       child: PrimaryButton(
+              //           onPressed: () async {
+              //             if (image == null && name.text.isEmpty) {
+              //               Navigator.of(context).pop();
+              //             } else if (image != null) {
+              //               String imageUrl = await FirebaseStorageHelper.instance
+              //                   .uploadUserImage(widget.sellerModel.id, image!);
+              //               SellerModel sellerModel = widget.sellerModel.copyWith(
+              //                 idCard: imageUrl,
+              //                 firstName: name.text.isEmpty ? null : name.text,
+              //               );
+              //               appProvider.updateUserList(widget.index, sellerModel);
+              //               showMessage('user successfuly updated');
+              //             } else {
+              //               SellerModel sellerModel = widget.sellerModel.copyWith(
+              //                 firstName: name.text.isEmpty ? null : name.text,
+              //               );
+              //               appProvider.updateUserList(widget.index, sellerModel);
+              //               showMessage('user successfuly updated');
+              //             }
+              //             Navigator.of(context).pop();
+              //             //   appProvider.updateUserInfoFirebase(
+              //             //   context, userModel, image);
+              //           },
+              //           title: 'Update')
+              )
         ],
       ),
     );
