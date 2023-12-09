@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sellers/constants/routes.dart';
 import 'package:sellers/models/catagory_model.dart';
-import 'package:sellers/provider/app_provider.dart';
-import 'package:sellers/widgets/edit_category.dart';
+import 'package:sellers/providers/app_provider.dart';
+
 
 class SingleCategoryItem extends StatefulWidget {
   final CategoryModel singleCategory;
@@ -57,11 +57,11 @@ class _SingleCategoryItemState extends State<SingleCategoryItem> {
                       setState(() {
                         isLoading = true;
                       });
-                      await appProvider
-                          .deleteCategoryFromFirebase(widget.singleCategory);
-                      setState(() {
-                        isLoading = false;
-                      });
+                      // await appProvider
+                      //     .deleteCategoryFromFirebase(widget.singleCategory);
+                      // setState(() {
+                      //   isLoading = false;
+                      // });
                     },
                     child: isLoading
                         ? Center(
@@ -78,11 +78,11 @@ class _SingleCategoryItemState extends State<SingleCategoryItem> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Routes.instance.push(
-                        widget: EditCategory(
-                            categoryModel: widget.singleCategory,
-                            index: widget.index),
-                        context: context);
+                    // Routes.instance.push(
+                    //     widget: EditCategory(
+                    //         categoryModel: widget.singleCategory,
+                    //         index: widget.index),
+                    //     context: context);
                   },
                   child: const Icon(
                     Icons.edit,

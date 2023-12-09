@@ -8,6 +8,7 @@ ThemeData themeData = ThemeData(
 
   ////////////////////////////////////////////////
   inputDecorationTheme: InputDecorationTheme(
+      border: outlineInputBorder,
       errorBorder: outlineInputBorder,
       enabledBorder: outlineInputBorder,
       focusedBorder: outlineInputBorder,

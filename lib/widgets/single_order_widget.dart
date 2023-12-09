@@ -1,18 +1,19 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/cupertino.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:sellers/constants/constants.dart';
 import 'package:sellers/controllers/firebase_firestore_helper.dart';
 import 'package:sellers/models/order_model.dart';
-import 'package:sellers/provider/app_provider.dart';
+import 'package:sellers/providers/app_provider.dart';
 
 class SingleOrderWidget extends StatefulWidget {
   final OrderModel orderModel;
-  const SingleOrderWidget({super.key, required this.orderModel});
+
+  const SingleOrderWidget({Key? key, required this.orderModel})
+      : super(key: key);
 
   @override
   State<SingleOrderWidget> createState() => _SingleOrderWidgetState();
@@ -28,10 +29,11 @@ class _SingleOrderWidgetState extends State<SingleOrderWidget> {
         tilePadding: EdgeInsets.zero,
         backgroundColor: Colors.white,
         collapsedShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(
-              color: Colors.blue,
-            )),
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.white,
+          ),
+        ),
         shape: RoundedRectangleBorder(side: BorderSide(color: Colors.grey)),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -63,12 +65,14 @@ class _SingleOrderWidgetState extends State<SingleOrderWidget> {
                       if (widget.orderModel.products.length > 1) ...[
                         SizedBox(height: 10),
                         Text(
-                            'Quantity: ${widget.orderModel.products[0].quantity.toString()}'),
+                          'Quantity: ${widget.orderModel.products[0].quantity.toString()}',
+                        ),
                       ],
                       SizedBox(height: 10),
                       FittedBox(
                         child: Text(
-                            'Total price: ETB ${widget.orderModel.totalprice.toString()}'),
+                          'Total price: ETB ${widget.orderModel.totalprice.toString()}',
+                        ),
                       ),
                       SizedBox(height: 10),
                       FittedBox(
@@ -96,23 +100,27 @@ class _SingleOrderWidgetState extends State<SingleOrderWidget> {
                           onPressed: () async {
                             await FirebaseFirestoreHelper.instance
                                 .updateOrder(widget.orderModel, 'delivery');
-                            widget.orderModel.status = 'delivery';
+                            setState(() {
+                              widget.orderModel.status = 'delivery';
+                            });
                             appProvider.updatePendingOrder(widget.orderModel);
                             showMessage('Order Sent to Delivery');
-                            setState(() {});
+                            // setState(() {}); // Add setState here
                           },
-                          child: Container(
-                            height: 40,
-                            width: double.infinity,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(8)),
-                            child: Text(
-                              'Send to Delivery',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                          child: Expanded(
+                            child: Container(
+                              height: 40,
+                              width: 140,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: Text(
+                                'Send to Delivery',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
                         ),
@@ -129,25 +137,28 @@ class _SingleOrderWidgetState extends State<SingleOrderWidget> {
                                   .updateCancelPendingOrder(widget.orderModel);
                             } else {
                               widget.orderModel.status = 'canceled';
-                              FirebaseFirestoreHelper.instance
+                              await FirebaseFirestoreHelper.instance
                                   .updateOrder(widget.orderModel, 'canceled');
 
                               appProvider.updateCanceleDeliveryOrder(
                                   widget.orderModel);
                             }
+                            setState(() {}); // Add setState here
                           },
-                          child: Container(
-                            height: 40,
-                            width: double.infinity,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(8)),
-                            child: Text(
-                              'Cancel order',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                          child: Expanded(
+                            child: Container(
+                              height: 40,
+                              width: 140,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: Text(
+                                'Cancel order',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
                         ),

@@ -2,17 +2,37 @@
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+//import 'package:intl/intl.dart';
 
 void showMessage(String message) {
   Fluttertoast.showToast(
     msg: message,
-    toastLength: Toast.LENGTH_LONG,
-    gravity: ToastGravity.BOTTOM,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.CENTER,
     // timeInSecForIosWeb: 1,
-    backgroundColor: Colors.red,
+    backgroundColor: Colors.deepOrange,
     textColor: Colors.white,
     fontSize: 16.0,
   );
+}
+
+snackBar(context, message) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(
+      message,
+      style: const TextStyle(fontSize: 20),
+    ),
+    backgroundColor: Colors.red,
+    padding: const EdgeInsets.all(10),
+    action: SnackBarAction(
+      backgroundColor: Colors.white,
+      label: 'OK',
+      textColor: Colors.red,
+      onPressed: () {
+        ScaffoldMessenger.of(context).clearSnackBars();
+      },
+    ),
+  ));
 }
 
 ShowLoderDialog(BuildContext context) {
@@ -44,6 +64,39 @@ ShowLoderDialog(BuildContext context) {
       );
     }),
   );
+
+  // String formattedDate(date) {
+  //   var outputFormat = DateFormat('dd/MM/yyyy hh:mm aa');
+  //   var outputDate = outputFormat.format(date);
+  //   return outputDate;
+  // }
+
+  // String formatedNumber(number) {
+  //   var format = NumberFormat('#,##,###');
+  //   String formattedNumber = format.format(number);
+  //   return formattedNumber;
+  // }
+
+  Widget formField(
+      {String? label,
+      TextInputType? inputType,
+      Function(String)? onChanged,
+      int? minLine,
+      int? maxLine}) {
+    return TextFormField(
+        keyboardType: inputType,
+        decoration: InputDecoration(
+          label: Text(label!),
+        ),
+        validator: (value) {
+          if (value!.isEmpty) {
+            return label;
+          }
+        },
+        onChanged: onChanged,
+        minLines: minLine,
+        maxLines: maxLine);
+  }
 
   showDialog(
       barrierDismissible: false,

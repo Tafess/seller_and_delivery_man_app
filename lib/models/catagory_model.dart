@@ -42,14 +42,4 @@ class CategoryModel {
         // 'status': status,
         // 'isFavorite': false,
       };
-
-  CategoryModel copyWith({
-    String? name,
-    String? image,
-  }) =>
-      CategoryModel(
-        id: id,
-        name: name ?? this.name,
-        image: image ?? this.image,
-      );
 }

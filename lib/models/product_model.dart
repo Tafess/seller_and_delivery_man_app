@@ -49,9 +49,9 @@ class ProductModel {
       measurement: json['measurement'] ?? '',
       status: json['status'] ?? '',
       isFavorite: false,
-      disabled: json['disabled'],
-      productId: json['productId'],
-      sellerId: json['sellerId'],
+      disabled: json['disabled'] ?? false,
+      productId: json['productId'] ?? '',
+      sellerId: json['sellerId'] ?? '',
     );
   }
 
@@ -63,6 +63,7 @@ class ProductModel {
       'image': image,
       'name': name,
       'price': price,
+      'discount': discount,
       'quantity': quantity,
       'size': size,
       'measurement': measurement,
@@ -70,41 +71,36 @@ class ProductModel {
       'isFavorite': false,
       'disabled': false,
       'productId': productId,
-      'sellerId':sellerId,
+      'sellerId': sellerId,
     };
   }
 
   ProductModel copyWith({
-    String? categoryId,
     String? description,
-    String? id,
     String? image,
     String? name,
     double? price,
+    double? discount,
     int? quantity,
     double? size,
     String? measurement,
-    double? discount,
-    String? status,
-    String? productId,
-    String? sellerId,
   }) {
     return ProductModel(
-      categoryId: categoryId ?? this.categoryId,
+      categoryId: categoryId,
       description: description ?? this.description,
-      id: id ?? this.id,
+      id: id,
       image: image ?? this.image,
       name: name ?? this.name,
       price: price ?? this.price,
-      discount: price ?? this.price,
+      discount: discount ?? this.discount,
       quantity: quantity ?? this.quantity,
       size: size ?? this.size,
       measurement: measurement ?? this.measurement,
-      status: status ?? this.status,
+      status: status,
       isFavorite: false,
       disabled: false,
-      productId: productId??'',
-      sellerId: sellerId??'',
+      productId: productId,
+      sellerId: sellerId,
     );
   }
 }
