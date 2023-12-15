@@ -26,8 +26,8 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
         const HomePage(),
         const ProductView(),
         const OrdersScreen(),
-        const AccountScreen(),
-        const FavoriteScreen(),
+        // const AccountScreen(),
+        // const FavoriteScreen(),
 
         //  ProfileScreen(),
         //OrderScreen(),
@@ -54,23 +54,24 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
             title: 'Orders',
             activeColorPrimary: Colors.blue,
             inactiveColorPrimary: Colors.deepOrange),
-        PersistentBottomNavBarItem(
-          icon: const Icon(Icons.person),
-          inactiveIcon: const Icon(Icons.person_2_outlined, size: 20),
-          title: 'Profile',
-          activeColorPrimary: Colors.blue,
-          inactiveColorPrimary: Colors.deepOrange,
-        ),
-        PersistentBottomNavBarItem(
-          icon: const Icon(Icons.settings_applications),
-          inactiveIcon: Icon(
-            Icons.settings,
-            size: 20,
-          ),
-          title: 'Settings',
-          activeColorPrimary: Colors.blue,
-          inactiveColorPrimary: Colors.deepOrange,
-        )
+        //   PersistentBottomNavBarItem(
+        //     icon: const Icon(Icons.person),
+        //     inactiveIcon: const Icon(Icons.person_2_outlined, size: 20),
+        //     title: 'Profile',
+        //     activeColorPrimary: Colors.blue,
+        //     inactiveColorPrimary: Colors.deepOrange,
+        //   ),
+        //   PersistentBottomNavBarItem(
+        //     icon: const Icon(Icons.settings_applications),
+        //     inactiveIcon: Icon(
+        //       Icons.settings,
+        //       size: 20,
+        //     ),
+        //     title: 'Settings',
+        //     activeColorPrimary: Colors.blue,
+        //     inactiveColorPrimary: Colors.deepOrange,
+        //   )
+        //
       ];
 
   @override
@@ -91,14 +92,14 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
           hideNavigationBar: _hideNavBar,
           decoration: const NavBarDecoration(colorBehindNavBar: Colors.red),
           itemAnimationProperties: const ItemAnimationProperties(
-            duration: Duration(milliseconds: 50),
-            curve: Curves.ease,
+            duration: Duration(milliseconds: 0),
+            curve: Curves.linear,
           ),
           screenTransitionAnimation: const ScreenTransitionAnimation(
             animateTabTransition: true,
           ),
-          navBarStyle:
-              NavBarStyle.style9, // Choose the nav bar style with this property
+          navBarStyle: NavBarStyle
+              .style13, // Choose the nav bar style with this property
         ),
       );
 }

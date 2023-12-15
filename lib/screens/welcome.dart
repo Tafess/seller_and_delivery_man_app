@@ -14,40 +14,41 @@ class Welcome extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                height: 200,
+                height: 300,
                 width: double.infinity,
                 child: Image.asset(
                   'assets/images/belkis3.jpg',
-                  scale: 8,
+                  scale: 1,
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CupertinoButton(
-                    onPressed: () {},
-                    padding: EdgeInsets.zero,
-                    child: const Icon(
-                      Icons.facebook,
-                      size: 35,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  // CupertinoButton(
-                  //   onPressed: () {},
-                  //   child: Image.asset(
-                  //     AssetImages.instance.googleLogo,
-                  //     scale: 80,
-                  //   ),
-                  // ),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     // CupertinoButton(
+              //     //   onPressed: () {},
+              //     //   padding: EdgeInsets.zero,
+              //     //   child: const Icon(
+              //     //     Icons.facebook,
+              //     //     size: 35,
+              //     //     color: Colors.blue,
+              //     //   ),
+              //     // ),
+              //     // CupertinoButton(
+              //     //   onPressed: () {},
+              //     //   child: Image.asset(
+              //     //     AssetImages.instance.googleLogo,
+              //     //     scale: 80,
+              //     //   ),
+              //     // ),
+              //   ],
+              // ),
+
               const SizedBox(height: 20),
               PrimaryButton(
                 title: 'Sign In',

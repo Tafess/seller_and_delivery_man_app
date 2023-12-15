@@ -41,9 +41,11 @@ class _SignUpState extends State<SignUp> {
     return Form(
       key: _formKey,
       child: Scaffold(
-        // appBar: AppBar(),
+        appBar: AppBar(
+          title: Text('Registration'),
+        ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 25),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -52,6 +54,7 @@ class _SignUpState extends State<SignUp> {
                 SizedBox(
                   height: 12,
                 ),
+
                 TextFormField(
                   controller: firstName,
                   keyboardType: TextInputType.name,
@@ -328,7 +331,7 @@ class _SignUpState extends State<SignUp> {
         ),
         persistentFooterButtons: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+            padding: const EdgeInsets.fromLTRB(4, 2, 2, 2),
             child: Row(
               children: [
                 Expanded(
@@ -367,7 +370,7 @@ class _SignUpState extends State<SignUp> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all(Colors.blue.shade400),
+                          MaterialStateProperty.all(Colors.green.shade400),
                       // No need to set width here
                       shape: MaterialStateProperty.all(
                         RoundedRectangleBorder(
@@ -380,7 +383,7 @@ class _SignUpState extends State<SignUp> {
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 24),
+                          fontSize: 18),
                     ),
                   ),
                 ),
@@ -394,7 +397,7 @@ class _SignUpState extends State<SignUp> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all(Colors.green.shade400),
+                          MaterialStateProperty.all(Colors.grey.shade700),
                       // No need to set width here
                       shape: MaterialStateProperty.all(
                         RoundedRectangleBorder(
@@ -407,7 +410,7 @@ class _SignUpState extends State<SignUp> {
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 24),
+                          fontSize: 18),
                     ),
                   ),
                 ),

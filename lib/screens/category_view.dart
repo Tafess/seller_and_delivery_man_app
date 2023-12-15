@@ -2,9 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sellers/constants/theme.dart';
 import 'package:sellers/constants/top_titles.dart';
 import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/providers/app_provider.dart';
+import 'package:sellers/widgets/custom_drawer.dart';
 import 'package:sellers/widgets/single_category_item.dart';
 
 class CategoryViewScreen extends StatelessWidget {
@@ -26,7 +28,13 @@ class CategoryViewScreen extends StatelessWidget {
       //     )
       //   ],
       // ),
-
+      appBar: AppBar(
+        title: Text(
+          'Categories',
+          style: themeData.appBarTheme.titleTextStyle,
+        ),
+      ),
+drawer: CustomDrawer(),
       body: Consumer<AppProvider>(
         builder: (context, value, child) {
           AppProvider appProvider = Provider.of<AppProvider>(context);
@@ -35,9 +43,9 @@ class CategoryViewScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TopTitles(
-                    title: 'categories',
-                    subtitle: appProvider.getCategoryList.length.toString()),
+                // TopTitles(
+                //     title: 'categories',
+                //     subtitle: appProvider.getCategoryList.length.toString()),
                 const SizedBox(height: 20),
                 GridView.builder(
                   padding: EdgeInsets.all(12),

@@ -10,6 +10,7 @@ import 'package:sellers/constants/constants.dart';
 import 'package:sellers/constants/primary_button.dart';
 import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/providers/app_provider.dart';
+import 'package:sellers/widgets/custom_drawer.dart';
 
 class AddProduct extends StatefulWidget {
   const AddProduct({
@@ -53,7 +54,8 @@ class _AddProductState extends State<AddProduct> {
     return Form(
       key: _formKey,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Product edit')),
+        appBar: AppBar(title: const Text('Product adding...')),
+        // drawer: CustomDrawer(),
         body: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
           children: [

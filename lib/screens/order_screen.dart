@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:sellers/controllers/firebase_firestore_helper.dart';
 import 'package:sellers/models/order_model.dart';
+import 'package:sellers/widgets/custom_drawer.dart';
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
@@ -56,6 +57,7 @@ class _OrderScreenState extends State<OrderScreen> {
               ],
             )
           : null,
+      drawer: CustomDrawer(),
       body: FutureBuilder(
           future: FirebaseFirestoreHelper.instance.getUserOrder(),
           builder: (context, snapshot) {

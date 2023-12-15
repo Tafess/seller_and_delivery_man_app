@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:sellers/constants/constants.dart';
 import 'package:sellers/constants/primary_button.dart';
 import 'package:sellers/controllers/firebase_auth_helper.dart';
+import 'package:sellers/widgets/custom_drawer.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -28,6 +29,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           Icon(Icons.person),
         ],
       ),
+      drawer: CustomDrawer(),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 40),
         children: [

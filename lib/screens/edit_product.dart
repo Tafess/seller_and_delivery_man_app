@@ -12,6 +12,7 @@ import 'package:sellers/controllers/firebase_storage_helper.dart';
 import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/models/product_model.dart';
 import 'package:sellers/providers/app_provider.dart';
+import 'package:sellers/widgets/custom_drawer.dart';
 
 class EditProduct extends StatefulWidget {
   final ProductModel productModel;
@@ -54,6 +55,7 @@ class _EditProductState extends State<EditProduct> {
     );
     return Scaffold(
       appBar: AppBar(title: const Text('Product edit')),
+      //  drawer: CustomDrawer(),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
         children: [

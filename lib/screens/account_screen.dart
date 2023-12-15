@@ -5,7 +5,6 @@ import 'package:sellers/constants/primary_button.dart';
 import 'package:sellers/constants/routes.dart';
 import 'package:sellers/providers/app_provider.dart';
 import 'package:sellers/screens/change_password_screen.dart';
-import 'package:sellers/screens/edit_profile_screen.dart';
 import 'package:sellers/screens/favorite_screen.dart';
 
 class AccountScreen extends StatefulWidget {

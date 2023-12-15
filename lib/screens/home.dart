@@ -5,10 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:sellers/constants/routes.dart';
 import 'package:sellers/providers/app_provider.dart';
 import 'package:sellers/screens/category_view.dart';
-import 'package:sellers/screens/completed_order_list.dart';
-import 'package:sellers/screens/order_screen.dart';
+import 'package:sellers/screens/order_list.dart';
 import 'package:sellers/screens/orders_screen.dart';
 import 'package:sellers/screens/product_view.dart';
+import 'package:sellers/widgets/custom_drawer.dart';
 import 'package:sellers/widgets/single_dash_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Dashboard'),
       ),
+      drawer: CustomDrawer(),
       body: isloading
           ? const Center(
               child: CircularProgressIndicator(),
@@ -55,37 +56,13 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 30,
-                        ),
-                        SizedBox(width: 20),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(appProvider.getUserInformation.email!),
-                            Text('admin@gmail.com'),
-                          ],
-                        ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Send Notification',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
                   Column(
                     children: [
+                      Divider(),
                       GridView.count(
                         shrinkWrap: true,
                         primary: false,
-                        padding: const EdgeInsets.only(top: 12),
+                        padding: const EdgeInsets.only(top: 20),
                         crossAxisCount: 2,
                         children: [
                           // SingleDashItem(
@@ -103,7 +80,8 @@ class _HomePageState extends State<HomePage> {
                                     widget: const CategoryViewScreen(),
                                     context: context);
                               },
-                              title: 'Category',
+                              icon: Icons.category_outlined,
+                              title: 'Categories',
                               subtitle: appProvider.getCategoryList.length
                                   .toString()),
                           SingleDashItem(
@@ -112,6 +90,7 @@ class _HomePageState extends State<HomePage> {
                                     widget: const ProductView(),
                                     context: context);
                               },
+                              icon: Icons.shop_2,
                               title: 'Products',
                               subtitle:
                                   appProvider.getProducts.length.toString()),
@@ -121,6 +100,7 @@ class _HomePageState extends State<HomePage> {
                                     widget: const ProductView(),
                                     context: context);
                               },
+                              icon: Icons.money,
                               title: 'Earnings',
                               subtitle: 'ETB ${appProvider.getTotalEarnings}'),
                           SingleDashItem(
@@ -128,7 +108,8 @@ class _HomePageState extends State<HomePage> {
                                 Routes.instance.push(
                                     widget: OrdersScreen(), context: context);
                               },
-                              title: 'All orders',
+                              icon: Icons.circle_outlined,
+                              title: 'Orders',
                               subtitle: appProvider.getAllOrderList.length
                                   .toString()),
                           SingleDashItem(
@@ -137,6 +118,7 @@ class _HomePageState extends State<HomePage> {
                                     widget: OrderListView(title: 'Pending'),
                                     context: context);
                               },
+                              icon: Icons.pending_actions,
                               title: 'Pending orders',
                               subtitle: appProvider.getPendingOrderList.length
                                   .toString()),
@@ -148,24 +130,27 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     context: context);
                               },
+                              icon: Icons.fullscreen,
                               title: 'Completed orders',
                               subtitle: appProvider.getCompletedOrder.length
                                   .toString()),
-                          SingleDashItem(
-                              onPressed: () {
-                                Routes.instance.push(
-                                    widget: OrderListView(title: 'Canceled'),
-                                    context: context);
-                              },
-                              title: 'Canceled orders',
-                              subtitle: appProvider.getCanceledOrderList.length
-                                  .toString()),
+                          // SingleDashItem(
+                          //     onPressed: () {
+                          //       Routes.instance.push(
+                          //           widget: OrderListView(title: 'Canceled'),
+                          //           context: context);
+                          //     },
+                          //     icon: Icons.cancel_outlined,
+                          //     title: 'Canceled orders',
+                          //     subtitle: appProvider.getCanceledOrderList.length
+                          //         .toString()),
                           SingleDashItem(
                               onPressed: () {
                                 Routes.instance.push(
                                     widget: OrderListView(title: 'Delivery'),
                                     context: context);
                               },
+                              icon: Icons.delivery_dining_rounded,
                               title: 'Delvery orders',
                               subtitle: appProvider.getDeliveryOrderList.length
                                   .toString()),

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sellers/providers/app_provider.dart';
+import 'package:sellers/widgets/custom_drawer.dart';
 import 'package:sellers/widgets/single_favorite_widget.dart';
 
 class FavoriteScreen extends StatelessWidget {
@@ -24,6 +25,7 @@ class FavoriteScreen extends StatelessWidget {
           )
         ],
       ),
+      drawer: CustomDrawer(),
       body: appProvider.getFavoriteProductList.isEmpty
           ? const Center(
               child: Text('Favorite is empty'),

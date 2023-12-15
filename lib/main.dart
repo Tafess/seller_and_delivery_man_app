@@ -29,12 +29,9 @@ class MyApp extends StatelessWidget {
       create: (context) => AppProvider(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        
         title: 'Belkis ',
         theme: themeData,
         darkTheme: themeData,
-        
-        
         home: StreamBuilder(
             stream: FirebaseAuthHelper.instance.getAuthChange,
             builder: (context, snapshot) {

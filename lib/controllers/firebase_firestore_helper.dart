@@ -57,7 +57,7 @@ class FirebaseFirestoreHelper {
       List<ProductModel> productModelList = querySnapshot.docs
           .map((e) => ProductModel.fromJson(e.data()))
           .toList();
-      return productModelList; // Return the mapped productModelList
+      return productModelList;
     } catch (e) {
       showMessage(e.toString());
       return [];
@@ -185,8 +185,10 @@ class FirebaseFirestoreHelper {
   }
 
   Future<List<SellerModel>> getUserList() async {
-    QuerySnapshot<Map<String, dynamic>> querySnapshot =
-        await _firebaseFirestore.collection('users').get();
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firebaseFirestore
+        .collection('sellers')
+        .where('id', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
     return querySnapshot.docs
         .map((e) => SellerModel.fromJson(e.data()))
         .toList();
@@ -298,16 +300,21 @@ class FirebaseFirestoreHelper {
   }
 
   Future<void> updateSingleProduct(ProductModel productModel) async {
-    DocumentReference productRef = _firebaseFirestore
-        .collection('categories')
-        .doc(productModel.categoryId) // Use categoryId as the document ID
-        .collection('products')
-        .doc(productModel.id); // Use productId as the document ID
+    try {
+      DocumentReference productRef = _firebaseFirestore
+          .collection('categories')
+          .doc(productModel.categoryId) // Use categoryId as the document ID
+          .collection('products')
+          .doc(productModel.id); // Use productId as the document ID
 
-    DocumentSnapshot productSnapshot = await productRef.get();
+      DocumentSnapshot productSnapshot = await productRef.get();
 
-    if (productSnapshot.exists) {
-      await productRef.update(productModel.toJson());
+      if (productSnapshot.exists) {
+        await productRef.update(productModel.toJson());
+        showMessage('Udated successfully');
+      }
+    } catch (e) {
+      print(e.toString());
     }
   }
 

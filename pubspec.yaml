@@ -113,19 +113,19 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
 
-  # fonts:
-  #   - family: Semi-Bold
-  #     fonts:
-  #       - asset: assets/fonts/AkayaTelivigala-Regular.ttf
+  fonts:
+    - family: Semi-Bold
+      fonts:
+        - asset: assets/fonts/AkayaTelivigala-Regular.ttf
 
-  #   - family: Brand-Bold
-  #     fonts:
-  #       - asset: assets/fonts/NotoSans-Black.ttf
+    - family: Brand-Bold
+      fonts:
+        - asset: assets/fonts/NotoSans-Black.ttf
 
-  #   - family: Regular
-  #     fonts:
-  #       - asset: assets/fonts/WorkSans-Regular.ttf
+    - family: Regular
+      fonts:
+        - asset: assets/fonts/WorkSans-Regular.ttf
 
-  #   - family: Bold
-  #     fonts:
-  #       - asset: assets/fonts/WorkSans-SemiBold.ttf
+    - family: Bold
+      fonts:
+        - asset: assets/fonts/WorkSans-SemiBold.ttf

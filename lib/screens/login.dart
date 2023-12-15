@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:sellers/constants/constants.dart';
 import 'package:sellers/constants/primary_button.dart';
 import 'package:sellers/constants/routes.dart';
+import 'package:sellers/constants/theme.dart';
 import 'package:sellers/constants/top_titles.dart';
 import 'package:sellers/controllers/firebase_auth_helper.dart';
 import 'package:sellers/screens/sign_up.dart';
@@ -28,96 +29,99 @@ class _LoginState extends State<Login> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              //Icon(Icons.arrow_back),
-              TopTitles(title: 'Login', subtitle: 'Welcome back '),
-              SizedBox(
-                height: 50,
-              ),
-              TextFormField(
-                controller: email,
-                decoration: InputDecoration(
-                  hintText: 'E-mail ',
-                  labelText: 'ENTER YOUR E-MAIL ADDRESS',
-                  labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
-                  prefixIcon: Icon(Icons.email_outlined),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 60.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                //Icon(Icons.arrow_back),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      'Login',
+                      style: themeData.textTheme.displayLarge,
+                    ),
+                    Icon(Icons.login)
+                  ],
                 ),
-              ),
-              SizedBox(
-                height: 50,
-              ),
-              TextFormField(
-                controller: password,
-                obscureText: isShowPassword,
-                decoration: InputDecoration(
-                  hintText: 'Password',
-                  labelText: 'ENTER YOUR PASSWORD',
-                  labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                  prefixIcon: Icon(
-                    Icons.lock,
-                    color: Colors.blue,
+                Image.asset('assets/images/sellers.jpg'),
+
+                TextFormField(
+                  controller: email,
+                  decoration: InputDecoration(
+                    hintText: 'E-mail ',
+                    prefixIcon: Icon(Icons.email_outlined),
                   ),
-                  suffixIcon: CupertinoButton(
-                    onPressed: () {
-                      setState(() {
-                        isShowPassword = !isShowPassword;
-                      });
-                    },
-                    child: Icon(
-                      Icons.visibility,
+                ),
+
+                TextFormField(
+                  controller: password,
+                  obscureText: isShowPassword,
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                    prefixIcon: Icon(
+                      Icons.lock,
+                      color: Colors.blue,
+                    ),
+                    suffixIcon: CupertinoButton(
+                      onPressed: () {
+                        setState(() {
+                          isShowPassword = !isShowPassword;
+                        });
+                      },
+                      child: Icon(
+                        Icons.visibility,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 50,
-              ),
-              PrimaryButton(
-                  title: 'Login',
-                  onPressed: () async {
-                    bool isValidate =
-                        loginValidation(email.text, password.text);
-                    if (isValidate) {
-                      bool islogined = await FirebaseAuthHelper.instance
-                          .login(email.text, password.text, context);
-                      if (islogined) {
-                        Routes.instance.pushAndRemoveUntil(
-                            widget: CustomBottomBar(), context: context);
+                SizedBox(
+                  height: 10,
+                ),
+                PrimaryButton(
+                    title: 'Login',
+                    onPressed: () async {
+                      bool isValidate =
+                          loginValidation(email.text, password.text);
+                      if (isValidate) {
+                        bool islogined = await FirebaseAuthHelper.instance
+                            .login(email.text, password.text, context);
+                        if (islogined) {
+                          Routes.instance.pushAndRemoveUntil(
+                              widget: CustomBottomBar(), context: context);
+                        }
                       }
-                    }
-                  }),
-              SizedBox(
-                height: 20,
-              ),
-              const Center(
-                child: Text('Do not Have An Account'),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Center(
-                child: CupertinoButton(
-                  onPressed: () {
-                    Routes.instance
-                        .push(widget: const SignUp(), context: context);
-                  },
+                    }),
+                SizedBox(
+                  height: 10,
+                ),
+                Center(
                   child: Text(
-                    'Create Account',
-                    style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold),
+                    'Do not Have An Account',
+                    style: themeData.textTheme.bodyLarge,
                   ),
                 ),
-              ),
-            ],
+
+                Center(
+                  child: CupertinoButton(
+                    onPressed: () {
+                      Routes.instance
+                          .push(widget: const SignUp(), context: context);
+                    },
+                    child: Text(
+                      'Create Account',
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
