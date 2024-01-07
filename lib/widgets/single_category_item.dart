@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sellers/constants/theme.dart';
-import 'package:sellers/controllers/firebase_firestore_helper.dart';
 import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/providers/app_provider.dart';
 
@@ -55,52 +54,6 @@ class _SingleCategoryItemState extends State<SingleCategoryItem> {
               ],
             ),
           ),
-          // Positioned(
-          //   right: 0.2,
-          //   child: Row(
-          //     children: [
-          //       IgnorePointer(
-          //         ignoring: isLoading,
-          //         child: GestureDetector(
-          //           onTap: () async {
-          //             setState(() {
-          //               isLoading = true;
-          //             });
-          //             // await appProvider
-          //             //     .deleteCategoryFromFirebase(widget.singleCategory);
-          //             // setState(() {
-          //             //   isLoading = false;
-          //             // });
-          //           },
-          //           child: isLoading
-          //               ? Center(
-          //                   child: CircularProgressIndicator(),
-          //                 )
-          //               : const Icon(
-          //                   Icons.delete,
-          //                   color: Colors.red,
-          //                 ),
-          //         ),
-          //       ),
-          //       SizedBox(
-          //         width: 20,
-          //       ),
-          //       GestureDetector(
-          //         onTap: () {
-          //           // Routes.instance.push(
-          //           //     widget: EditCategory(
-          //           //         categoryModel: widget.singleCategory,
-          //           //         index: widget.index),
-          //           //     context: context);
-          //         },
-          //         child: const Icon(
-          //           Icons.edit,
-          //           color: Colors.green,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
         ],
       ),
     );

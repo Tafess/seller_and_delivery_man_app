@@ -77,11 +77,11 @@
 //           ),
 //           const SizedBox(height: 12),
 //           SizedBox(
-//               child: PrimaryButton(
+//               child: CustomButton(
 //                   onPressed: () async {
 //                     String imageUrl =
 //                         await _storageHelper.uploadSellerImage(image!);
-//                     SellerModel sellerModel =
+//                     EmployeeModel EmployeeModel =
 //                         appProvider.getUserInformation.copyWith(
 //                       firstName: firstName.text.isEmpty ? null : firstName.text,
 //                       image: imageUrl,
@@ -89,7 +89,7 @@
 //                     try {
 //                       appProvider.updateUserInfoFirebase(
 //                         context,
-//                         sellerModel,
+//                         EmployeeModel,
 //                         image,
 //                       );
 //                     } catch (e) {

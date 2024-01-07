@@ -1,8 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sellers/constants/constants.dart';
-import 'package:sellers/constants/primary_button.dart';
+import 'package:sellers/constants/custom_button.dart';
 import 'package:sellers/constants/routes.dart';
 import 'package:sellers/providers/app_provider.dart';
 import 'package:sellers/screens/cart_checkout.dart';
@@ -23,7 +22,6 @@ class _CartScreenState extends State<CartScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        
         foregroundColor: Colors.white,
         title: const Text('My cart'),
         actions: const [
@@ -54,7 +52,7 @@ class _CartScreenState extends State<CartScreen> {
                           fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
-                    PrimaryButton(
+                    CustomButton(
                       title: 'Checkout',
                       onPressed: () {
                         appProvider.clearBuyProduct();
@@ -83,7 +81,10 @@ class _CartScreenState extends State<CartScreen> {
               itemBuilder: (ctx, index) {
                 return SIngleCartItem(
                     singleProduct: appProvider.getCartProductList[index]);
-              }),
+              },
+            ),
     );
   }
 }
+
+

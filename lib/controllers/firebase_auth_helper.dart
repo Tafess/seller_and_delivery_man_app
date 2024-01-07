@@ -1,17 +1,28 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
+
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sellers/constants/constants.dart';
+import 'package:sellers/constants/custom_snackbar.dart';
 import 'package:sellers/constants/routes.dart';
-import 'package:sellers/models/seller_model.dart';
+import 'package:sellers/controllers/firebase_firestore_helper.dart';
+import 'package:sellers/controllers/firebase_storage_helper.dart';
+import 'package:sellers/delivery/delivery_home.dart';
+import 'package:sellers/models/employee_model.dart';
+import 'package:sellers/screens/add_product.dart';
 import 'package:sellers/screens/home.dart';
+import 'package:sellers/screens/landing_screen.dart';
+import 'package:sellers/screens/login.dart';
+import 'package:sellers/widgets/bottom_bar.dart';
 
 class FirebaseAuthHelper {
   static FirebaseAuthHelper instance = FirebaseAuthHelper();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestoreHelper _firestoreHelper = FirebaseFirestoreHelper();
   Stream<User?> get getAuthChange => _auth.authStateChanges();
 
   Future<bool> login(
@@ -24,17 +35,47 @@ class FirebaseAuthHelper {
         password: password,
       );
 
-      Routes.instance
-          .pushAndRemoveUntil(widget: const HomePage(), context: context);
-      Navigator.of(context).pop();
+      User? user = FirebaseAuth.instance.currentUser;
+      FirebaseFirestore.instance
+          .collection('sellers')
+          .doc(user!.uid)
+          .get()
+          .then((DocumentSnapshot documentSnapshot) {
+        if (documentSnapshot.exists) {
+          if (documentSnapshot.get('role') == "seller" ||
+              documentSnapshot.get('role') == "delivery") {
+            Routes.instance
+                .push(widget: const CustomBottomBar(), context: context);
+            customSnackbar(
+                message: 'Sucessfully logined',
+                context: context,
+                backgroundColor: Colors.green.shade400,
+                margin: 30,
+                closTextColor: Colors.white);
+          }
+        } else {
+          Routes.instance.push(widget: Login(), context: context);
+          customSnackbar(
+              message: 'Unable to login with this account to the application',
+              context: context,
+              backgroundColor: Colors.red,
+              margin: 30,
+              closTextColor: Colors.white);
+          //  showMessage('Unable to login with this account to the application');
+        }
+      });
       return true;
     } on FirebaseAuthException catch (error) {
-      showMessage(error.code.toString());
+      // showMessage(error.toString());
+      Navigator.of(context).pop();
+
       return false;
     }
   }
 
   Future<bool> signUp(
+    File idCard,
+    File profile,
     String firstName,
     String middleName,
     String lastName,
@@ -47,6 +88,7 @@ class FirebaseAuthHelper {
     String zone,
     String woreda,
     String kebele,
+    String role,
     BuildContext context,
   ) async {
     try {
@@ -58,8 +100,18 @@ class FirebaseAuthHelper {
         password: password,
       );
 
-      SellerModel sellerModel = SellerModel(
+      DocumentReference<Map<String, dynamic>> reference =
+          FirebaseFirestore.instance.collection('sellers').doc();
+
+      String idCardUrl = await FirebaseStorageHelper.instance
+          .uploadEmployeeIdCard(reference.id, idCard);
+
+      String profileUrl = await FirebaseStorageHelper.instance
+          .uploadEmployeeIdCard(reference.id, idCard);
+
+      EmployeeModel employeeModel = EmployeeModel(
         id: userCredential.user!.uid,
+        idCard: idCardUrl,
         firstName: firstName,
         middleName: middleName,
         lastName: lastName,
@@ -71,15 +123,18 @@ class FirebaseAuthHelper {
         zone: zone,
         woreda: woreda,
         kebele: kebele,
-        image: null,
+        role: role,
+        profile: profileUrl,
+        approved: false,
       );
-      Routes.instance
-          .pushAndRemoveUntil(widget: const HomePage(), context: context);
+      Routes.instance.pushAndRemoveUntil(
+          widget: const CustomBottomBar(), context: context);
 
       _firestore
           .collection('sellers')
-          .doc(sellerModel.id)
-          .set(sellerModel.toJson());
+          .doc(employeeModel.id)
+          .set(employeeModel.toJson());
+
       Navigator.of(context).pop();
       return true;
     } on FirebaseAuthException catch (error) {
@@ -106,5 +161,29 @@ class FirebaseAuthHelper {
       showMessage(error.code.toString());
       return false;
     }
+  }
+
+  Widget getHomeScreen() {
+    return StreamBuilder<EmployeeModel>(
+      stream: _firestoreHelper.getSellersInfo(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          EmployeeModel? seller = snapshot.data;
+          if (seller != null) {
+            return (seller.role == 'delivery' && seller.approved == true)
+                ? DeliveryHomeScreen()
+                : (seller.role == 'seller' && seller.approved == true)
+                    ? HomePage()
+                    : LandingScreen();
+          } else {
+            return Login();
+          }
+        }
+      },
+    );
   }
 }

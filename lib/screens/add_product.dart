@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sellers/constants/constants.dart';
-import 'package:sellers/constants/primary_button.dart';
+import 'package:sellers/constants/custom_button.dart';
+import 'package:sellers/constants/custom_snackbar.dart';
+import 'package:sellers/constants/custom_text.dart';
 import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/providers/app_provider.dart';
-import 'package:sellers/widgets/custom_drawer.dart';
+import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 
 class AddProduct extends StatefulWidget {
   const AddProduct({
@@ -43,8 +45,37 @@ class _AddProductState extends State<AddProduct> {
   TextEditingController size = TextEditingController();
   TextEditingController measurement = TextEditingController();
   CategoryModel? _selectedCategory;
-  List<String> measurments = ['Kilogram', 'Litter'];
+  List<String> measurments = ['gram', 'ML'];
   String? _selectedUnit;
+  bool isDiscountEnabled = false;
+  DateTime? startDate;
+  DateTime? endDate;
+
+  Future<void> pickEndDate() async {
+    showCustomDateRangePicker(
+      context,
+      dismissible: true,
+      minimumDate: DateTime.now().subtract(const Duration(days: 30)),
+      maximumDate: DateTime.now().add(const Duration(days: 30)),
+      endDate: endDate,
+      startDate: startDate,
+      backgroundColor: Colors.white,
+      primaryColor: Colors.green,
+      onApplyClick: (start, end) {
+        setState(() {
+          endDate = end;
+          startDate = start;
+        });
+      },
+      onCancelClick: () {
+        setState(() {
+          endDate = null;
+          startDate = null;
+        });
+      },
+    );
+    ;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +121,7 @@ class _AddProductState extends State<AddProduct> {
                 if (value!.isEmpty) {
                   return 'Please enter product name';
                 }
+                return null;
               },
             ),
             const SizedBox(height: 12),
@@ -150,19 +182,54 @@ class _AddProductState extends State<AddProduct> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    controller: discount,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      hintText: 'Discount',
-                    ),
-                  ),
+                text(
+                    title: isDiscountEnabled
+                        ? 'Disable Discount'
+                        : 'Enable Discount'),
+                Checkbox(
+                  value: isDiscountEnabled,
+                  onChanged: (value) {
+                    setState(() {
+                      isDiscountEnabled = value!;
+                    });
+                  },
                 ),
               ],
             )),
+            if (isDiscountEnabled)
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: discount,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            fillColor: Colors.white,
+                            filled: true,
+                            hintText: 'Discount',
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            pickEndDate();
+                          },
+                          icon: Icon(Icons.date_range)),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      text(title: 'Discount Until'),
+                      text(title: endDate.toString()),
+                    ],
+                  ),
+                ],
+              ),
+            //  if (discount.text.isNotEmpty)
+
             const SizedBox(height: 12),
             Expanded(
                 child: Row(
@@ -224,10 +291,13 @@ class _AddProductState extends State<AddProduct> {
             SizedBox(height: 12),
             const SizedBox(height: 20),
             SizedBox(
-                child: PrimaryButton(
+                child: CustomButton(
                     onPressed: () async {
                       if (image == null) {
-                        showMessage('Please add image of product');
+                        customSnackbar(
+                            context: context,
+                            message: 'Please add image of product',
+                            backgroundColor: Colors.red);
                       } else if (_selectedCategory == null) {
                         snackBar(context, 'Category not selected');
                       } else if (_selectedUnit == null) {
@@ -244,6 +314,8 @@ class _AddProductState extends State<AddProduct> {
                           quantity.text.toString(),
                           size.text.toString(),
                           _selectedUnit!,
+                          startDate.toString(),
+                          endDate.toString(),
                         );
                         showMessage('Product successfully Added');
                         setState(() {
@@ -258,9 +330,6 @@ class _AddProductState extends State<AddProduct> {
                           _selectedUnit = null;
                         });
                       }
-
-                      //   appProvider.updateUserInfoFirebase(
-                      //   context, userModel, image);
                     },
                     title: 'Add')),
             SizedBox(height: 100),
@@ -270,3 +339,36 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 }
+
+
+//  void getGategoriesList(){
+//       FutureBuilder<List<CategoryModel>>(
+//               future: _firestoreHelper.getcategories(),
+//               builder: (context, snapshot) {
+//                 if (snapshot.connectionState == ConnectionState.waiting) {
+//                   return Center(child: CircularProgressIndicator());
+//                 } else if (snapshot.hasError) {
+//                   return Text('Error: ${snapshot.error}');
+//                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+//                   return Text('No categories available');
+//                 } else {
+//                   return DropdownButtonFormField<CategoryModel>(
+//                     dropdownColor: Colors.white,
+//                     value: _selectedCategory,
+//                     hint: Text('Select category'),
+//                     isExpanded: true,
+//                     onChanged: (value) {
+//                       setState(() {
+//                         _selectedCategory = value;
+//                       });
+//                     },
+//                     items: snapshot.data!.map((CategoryModel val) {
+//                       return DropdownMenuItem<CategoryModel>(
+//                         value: val,
+//                         child: Text(val.name),
+//                       );
+//                     }).toList(),
+//                   );
+//                 }
+//               },
+//             );

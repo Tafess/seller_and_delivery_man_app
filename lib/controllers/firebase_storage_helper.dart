@@ -26,10 +26,26 @@ class FirebaseStorageHelper {
     });
   }
 
-  Future<String> uploadSellerImage(String userId, File image) async {
+  Future<String> uploadproductImage(String userId, File image) async {
     TaskSnapshot taskSnapshot = await _storage.ref(userId).putFile(image);
     String imageUrl = await taskSnapshot.ref.getDownloadURL();
     return imageUrl;
+  }
+
+  Future<String> uploadEmployeeIdCard(String userId, File idCard) async {
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    TaskSnapshot taskSnapshot =
+        await _storage.ref('employeImages/$userId/$fileName').putFile(idCard);
+    String idCarduri = await taskSnapshot.ref.getDownloadURL();
+    return idCarduri;
+  }
+
+  Future<String> uploadEmployeeProfile(String userId, File profile) async {
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    TaskSnapshot taskSnapshot =
+        await _storage.ref('employeImages/$userId/$fileName').putFile(profile);
+    String profileUri = await taskSnapshot.ref.getDownloadURL();
+    return profileUri;
   }
 
   Future<String> uploadCategoryImage(String categoryId, File image) async {

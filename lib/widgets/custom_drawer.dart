@@ -3,11 +3,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sellers/constants/primary_button.dart';
 import 'package:sellers/constants/routes.dart';
 import 'package:sellers/providers/app_provider.dart';
 import 'package:sellers/screens/change_password_screen.dart';
-import 'package:sellers/screens/order_list.dart';
 import 'package:sellers/screens/favorite_screen.dart';
 import 'package:sellers/screens/home.dart';
 import 'package:sellers/screens/orders_screen.dart';
@@ -28,25 +26,33 @@ class CustomDrawer extends StatelessWidget {
               UserAccountsDrawerHeader(
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image:
-                        NetworkImage(appProvider.getUserList.first.image ?? ''),
+                    image: NetworkImage(appProvider.getUserList.isNotEmpty
+                        ? appProvider.getUserList.first.idCard ?? ''
+                        : ''),
                     fit: BoxFit.cover,
                   ),
                   color: Colors.deepOrange.shade400.withOpacity(0.9),
                 ),
                 accountName: Text(
-                  appProvider.getUserList.first.firstName ?? '',
+                  appProvider.getUserList.isNotEmpty
+                      ? appProvider.getUserList.first.firstName ?? ''
+                      : '',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 accountEmail: Text(
-                  appProvider.getUserList.first.email ?? '',
+                  appProvider.getUserList.isNotEmpty
+                      ? appProvider.getUserList.first.email ?? ''
+                      : '',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 currentAccountPicture: CircleAvatar(
-                  backgroundImage:
-                      NetworkImage(appProvider.getUserList.first.image ?? ''),
+                  backgroundImage: NetworkImage(
+                      appProvider.getUserList.isNotEmpty
+                          ? appProvider.getUserList.first.idCard ?? ''
+                          : ''),
                 ),
               ),
+
               ListTile(
                 onTap: () {
                   Routes.instance.push(
@@ -103,8 +109,8 @@ class CustomDrawer extends StatelessWidget {
               ),
               ListTile(
                 onTap: () {
-                  // FirebaseAuth.instance.signOut();
-                  Navigator.pop(context); // Close the drawer after signing out
+                  FirebaseAuth.instance.signOut();
+                  // Close the drawer after signing out
                 },
                 leading: const Icon(Icons.logout),
                 title: const Text('Logout'),

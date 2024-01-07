@@ -53,6 +53,14 @@ dependencies:
   flutter_stripe: ^9.6.0
   date_format: ^2.0.7
   intl: ^0.18.1
+  expandable: ^5.0.1
+  google_maps_flutter: ^2.5.0
+  google_maps_polyline: ^1.0.3
+  geocoding: ^2.1.1
+  location: ^5.0.3
+  get_storage: ^2.1.1
+  qr_code_scanner: ^1.0.1
+  custom_date_range_picker: ^1.0.10
 
 dev_dependencies:
   flutter_test:

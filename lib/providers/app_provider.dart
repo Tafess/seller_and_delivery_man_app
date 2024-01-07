@@ -6,32 +6,36 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sellers/constants/constants.dart';
 import 'package:sellers/controllers/firebase_firestore_helper.dart';
+import 'package:sellers/controllers/firebase_storage_helper.dart';
 import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/models/order_model.dart';
 import 'package:sellers/models/product_model.dart';
-import 'package:sellers/models/seller_model.dart';
+import 'package:sellers/models/employee_model.dart';
 
 class AppProvider with ChangeNotifier {
   //////// cart list
   final List<ProductModel> _cartProductList = [];
   final List<ProductModel> _buyProductList = [];
 
-  SellerModel _sellerModel = SellerModel(
-    id: '',
-    firstName: '',
-    middleName: '',
-    lastName: '',
-    phoneNumber: '',
-    email: '',
-    country: '',
-    region: '',
-    city: '',
-    zone: '',
-    woreda: '',
-    kebele: '',
-  );
+  // EmployeeModel _EmployeeModel = EmployeeModel(
+  //   id: '',
+  //   idCard: '',
+  //   firstName: '',
+  //   middleName: '',
+  //   lastName: '',
+  //   phoneNumber: '',
+  //   email: '',
+  //   country: '',
+  //   region: '',
+  //   city: '',
+  //   zone: '',
+  //   woreda: '',
+  //   kebele: '',
+  //   approved: false,
+  //   role: '',
+  // );
 
-  SellerModel get getUserInformation => _sellerModel;
+ // EmployeeModel get getUserInformation => _EmployeeModel;
 
   void addToCartproduct(ProductModel productModel) {
     _cartProductList.add(productModel);
@@ -67,41 +71,42 @@ class AppProvider with ChangeNotifier {
   //////////// user informaation
   ///
 
-  void getUserInfoFirebase() async {
-    _sellerModel = await FirebaseFirestoreHelper.instance.getUserInformation();
-    notifyListeners();
-  }
+  // void getUserInfoFirebase() async {
+  //   _EmployeeModel =
+  //       await FirebaseFirestoreHelper.instance.getUserInformation();
+  //   notifyListeners();
+  // }
 
-  void updateUserInfoFirebase(
-      BuildContext context, SellerModel sellerModel, file) async {
-    if (file == null) {
-      ShowLoderDialog(context);
-      _sellerModel = sellerModel;
-      FirebaseFirestore.instance
-          .collection('sellers')
-          .doc(_sellerModel.id)
-          .set(_sellerModel.toJson());
-      Navigator.of(context, rootNavigator: true).pop();
-      Navigator.of(context).pop();
-    } else {
-      ShowLoderDialog(context);
+  // void updateUserInfoFirebase(
+  //     BuildContext context, EmployeeModel EmployeeModel, file) async {
+  //   if (file == null) {
+  //     ShowLoderDialog(context);
+  //     _EmployeeModel = EmployeeModel;
+  //     FirebaseFirestore.instance
+  //         .collection('sellers')
+  //         .doc(_EmployeeModel.id)
+  //         .set(_EmployeeModel.toJson());
+  //     Navigator.of(context, rootNavigator: true).pop();
+  //     Navigator.of(context).pop();
+  //   } else {
+  //     ShowLoderDialog(context);
 
       // String imageUrl =
-      //     await FirebaseStorageHelper.instance.uploadSellerImage(image);
-      // _sellerModel = sellerModel.copyWith(
+      //     await FirebaseStorageHelper.instance.uploadSellerImage(_EmployeeModel.id!,image!);
+      // _EmployeeModel = EmployeeModel.copyWith(
       //   image: imageUrl,
       // );
-      await FirebaseFirestore.instance
-          .collection('sellers')
-          .doc(_sellerModel.id)
-          .set(_sellerModel.toJson());
+  //     await FirebaseFirestore.instance
+  //         .collection('sellers')
+  //         .doc(_EmployeeModel.id)
+  //         .set(_EmployeeModel.toJson());
 
-      Navigator.of(context, rootNavigator: true).pop();
-      Navigator.of(context).pop();
-    }
-    showMessage('succesfully updated');
-    notifyListeners();
-  }
+  //     Navigator.of(context, rootNavigator: true).pop();
+  //     Navigator.of(context).pop();
+  //   }
+  //   showMessage('succesfully updated');
+  //   notifyListeners();
+  // }
 
   /////       Total price  ///////////
 
@@ -154,7 +159,7 @@ class AppProvider with ChangeNotifier {
 
   List<ProductModel> get getBuyproductList => _buyProductList;
 
-  List<SellerModel> _userList = [];
+  List<EmployeeModel> _userList = [];
   List<CategoryModel> _categoryList = [];
   List<ProductModel> _productlist = [];
   List<OrderModel> _completedOrders = [];
@@ -175,10 +180,10 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getAllOrdersFunction() async {
-    _allOrders = await FirebaseFirestoreHelper.instance.getAllOrderList();
-    notifyListeners();
-  }
+  // Future<void> getAllOrdersFunction() async {
+  //   _allOrders = await FirebaseFirestoreHelper.instance.getAllOrderList();
+  //   notifyListeners();
+  // }
 
   Future<void> getCompletedOrderList() async {
     _completedOrders =
@@ -189,56 +194,56 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getPendingOrders() async {
-    _pendingOrders = await FirebaseFirestoreHelper.instance.getPendingOrders();
-    notifyListeners();
-  }
+  // Future<void> getPendingOrders() async {
+  //   _pendingOrders = await FirebaseFirestoreHelper.instance.getPendingOrders();
+  //   notifyListeners();
+  // }
 
-  Future<void> getCanceledOrders() async {
-    _canceledOrders = await FirebaseFirestoreHelper.instance.getCancelOrders();
-    notifyListeners();
-  }
+  // Future<void> getCanceledOrders() async {
+  //   _canceledOrders = await FirebaseFirestoreHelper.instance.getCancelOrders();
+  //   notifyListeners();
+  // }
 
-  Future<void> getDeliveryOrders() async {
-    _deliveryOrders =
-        await FirebaseFirestoreHelper.instance.getDeliveryOrders();
-    notifyListeners();
-  }
+  // Future<void> getDeliveryOrders() async {
+  //   _deliveryOrders =
+  //       await FirebaseFirestoreHelper.instance.getDeliveryOrders();
+  //   notifyListeners();
+  // }
 
-  Future<void> deleteUserFromFirebase(SellerModel sellerModel) async {
+  Future<void> deleteUserFromFirebase(EmployeeModel EmployeeModel) async {
     notifyListeners();
     String value = await FirebaseFirestoreHelper.instance
-        .deleteSingleUser(sellerModel.id!);
+        .deleteSingleUser(EmployeeModel.id!);
 
     if (value == 'Successfully deleted') {
-      _userList.remove(sellerModel);
+      _userList.remove(EmployeeModel);
       showMessage('User deleted successfully');
     }
     notifyListeners();
   }
 
-  List<SellerModel> get getUserList => _userList;
+  List<EmployeeModel> get getUserList => _userList;
   double get getTotalEarnings => _totalEarning;
   List<CategoryModel> get getCategoryList => _categoryList;
-  List<ProductModel> get getProducts => _productlist;
+  // List<ProductModel> get getProducts => _productlist;
   List<OrderModel> get getCompletedOrder => _completedOrders;
-  List<OrderModel> get getPendingOrderList => _pendingOrders;
-  List<OrderModel> get getCanceledOrderList => _canceledOrders;
-  List<OrderModel> get getDeliveryOrderList => _deliveryOrders;
-  List<OrderModel> get getAllOrderList => _allOrders;
+  // List<OrderModel> get getPendingOrderList => _pendingOrders;
+  // List<OrderModel> get getCanceledOrderList => _canceledOrders;
+  // List<OrderModel> get getDeliveryOrderList => _deliveryOrders;
+  // List<OrderModel> get getAllOrderList => _allOrders;
 
   Future<void> callBackFunction() async {
     await getUserListFunction();
     await getCategoryListFunction();
-    await getProduct();
+    // await getProduct();
     await getCompletedOrderList();
-    await getPendingOrders();
-    await getCanceledOrders();
-    await getDeliveryOrders();
-    await getAllOrdersFunction();
+    // await getPendingOrders();
+    // await getCanceledOrders();
+    // await getDeliveryOrders();
+    // await getAllOrdersFunction();
   }
 
-  void updateUserList(int index, SellerModel userModel) async {
+  void updateUserList(int index, EmployeeModel userModel) async {
     await FirebaseFirestoreHelper.instance.updateUser(userModel);
 
     // int index=_userList.indexOf(userModel);
@@ -280,20 +285,20 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteProductFromFirebase(ProductModel productModel) async {
-    notifyListeners();
-    String value = await FirebaseFirestoreHelper.instance
-        .deleteProduct(productModel.categoryId, productModel.id);
+  // Future<void> deleteProductFromFirebase(ProductModel productModel) async {
+  //   notifyListeners();
+  //   String value = await FirebaseFirestoreHelper.instance
+  //       .deleteProduct(productModel.id);
 
-    if (value == 'Successfully deleted') {
-      _productlist.remove(productModel);
-      showMessage('Product deleted successfully');
-    }
-    notifyListeners();
-  }
+  //   if (value == 'Successfully deleted') {
+  //     _productlist.remove(productModel);
+  //     showMessage('Product deleted successfully');
+  //   }
+  //   notifyListeners();
+  // }
 
   Future<void> updateProductList(int index, ProductModel productModel) async {
-    await FirebaseFirestoreHelper.instance.updateSingleProduct(productModel);
+    await FirebaseFirestoreHelper.instance.updateproduct(productModel);
     _productlist[index] = productModel;
     notifyListeners();
   }
@@ -308,10 +313,15 @@ class AppProvider with ChangeNotifier {
     String quantity,
     String size,
     String measurement,
+    String startDate,
+    String endDate,
   ) async {
-    ProductModel productModel = await FirebaseFirestoreHelper.instance
-        .addSingleProduct(image, name, categoryId, description, price, discount,
-            quantity, size, measurement);
+    ProductModel productModel =
+        await FirebaseFirestoreHelper.instance.addProduct(
+      image, name, categoryId, description, price, discount,
+      quantity, size, measurement,
+      // startDate, endDate
+    );
 
     _productlist.add(productModel);
     notifyListeners();

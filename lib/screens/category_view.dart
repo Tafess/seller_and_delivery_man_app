@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sellers/constants/theme.dart';
-import 'package:sellers/constants/top_titles.dart';
 import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/providers/app_provider.dart';
 import 'package:sellers/widgets/custom_drawer.dart';
@@ -34,7 +33,7 @@ class CategoryViewScreen extends StatelessWidget {
           style: themeData.appBarTheme.titleTextStyle,
         ),
       ),
-drawer: CustomDrawer(),
+      drawer: CustomDrawer(),
       body: Consumer<AppProvider>(
         builder: (context, value, child) {
           AppProvider appProvider = Provider.of<AppProvider>(context);
@@ -210,7 +209,7 @@ drawer: CustomDrawer(),
 //                                       SizedBox(
 //                                         height: 40,
 //                                         width: 100,
-//                                         child: PrimaryButton(
+//                                         child: CustomButton(
 //                                           onPressed: () {
 //                                             Routes.instance.push(
 //                                                 widget: ProductDetails(

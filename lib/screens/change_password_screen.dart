@@ -1,9 +1,7 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sellers/constants/constants.dart';
-import 'package:sellers/constants/primary_button.dart';
+import 'package:sellers/constants/custom_button.dart';
 import 'package:sellers/controllers/firebase_auth_helper.dart';
 import 'package:sellers/widgets/custom_drawer.dart';
 
@@ -22,7 +20,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-       
         foregroundColor: Colors.white,
         title: const Text('Change Password'),
         actions: const [
@@ -89,12 +86,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          PrimaryButton(
+          CustomButton(
               onPressed: () {
                 if (newPassword.text.isEmpty) {
                   showMessage('Please enter a new password');
-                  
-
                 } else if (conformPassword.text.isEmpty) {
                   showMessage('Please enter confirmation password');
                 } else {

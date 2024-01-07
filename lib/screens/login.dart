@@ -3,13 +3,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sellers/constants/constants.dart';
-import 'package:sellers/constants/primary_button.dart';
+import 'package:sellers/constants/custom_button.dart';
+import 'package:sellers/constants/custom_snackbar.dart';
 import 'package:sellers/constants/routes.dart';
 import 'package:sellers/constants/theme.dart';
-import 'package:sellers/constants/top_titles.dart';
 import 'package:sellers/controllers/firebase_auth_helper.dart';
 import 'package:sellers/screens/sign_up.dart';
-import 'package:sellers/widgets/bottom_bar.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -81,7 +80,7 @@ class _LoginState extends State<Login> {
                 SizedBox(
                   height: 10,
                 ),
-                PrimaryButton(
+                CustomButton(
                     title: 'Login',
                     onPressed: () async {
                       bool isValidate =
@@ -90,8 +89,13 @@ class _LoginState extends State<Login> {
                         bool islogined = await FirebaseAuthHelper.instance
                             .login(email.text, password.text, context);
                         if (islogined) {
-                          Routes.instance.pushAndRemoveUntil(
-                              widget: CustomBottomBar(), context: context);
+                          FirebaseAuthHelper authHelper = FirebaseAuthHelper();
+                          authHelper.getHomeScreen();
+                        } else {
+                          customSnackbar(
+                              context: context,
+                              message:
+                                  'Some error occurred! Please try again!!!');
                         }
                       }
                     }),

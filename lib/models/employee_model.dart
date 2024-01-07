@@ -1,12 +1,15 @@
 import 'dart:convert';
 
-SellerModel sellerModelFromJson(String str) =>
-    SellerModel.fromJson(json.decode(str));
+EmployeeModel employeeModelFromJson(String str) =>
+    EmployeeModel.fromJson(json.decode(str));
 
-String sellerModelToJson(SellerModel data) => json.encode(data.toJson());
+String employeeModelToJson(EmployeeModel data) => json.encode(data.toJson());
 
-class SellerModel {
-  String? image;
+class EmployeeModel {
+  String? profile;
+  String? idCard;
+  bool approved;
+  String role;
   String? id;
   String? firstName;
   String? middleName;
@@ -20,8 +23,11 @@ class SellerModel {
   String? woreda;
   String? kebele;
 
-  SellerModel({
-    this.image,
+  EmployeeModel({
+    this.profile,
+    this.idCard,
+    required this.approved,
+    required this.role,
     this.id,
     this.firstName,
     this.middleName,
@@ -36,8 +42,11 @@ class SellerModel {
     this.kebele,
   });
 
-  factory SellerModel.fromJson(Map<String, dynamic> json) => SellerModel(
-        image: json['image'],
+  factory EmployeeModel.fromJson(Map<String, dynamic> json) => EmployeeModel(
+        profile: json['profile'],
+        idCard: json['idCard'],
+        approved: json['approved'],
+        role: json['role'],
         id: json['id'],
         firstName: json['firstName'],
         middleName: json['middleName'],
@@ -52,7 +61,10 @@ class SellerModel {
         kebele: json['kebele'],
       );
   Map<String, dynamic> toJson() => {
-        'image': image,
+        'profile': profile,
+        'idCard': idCard,
+        'approved': false,
+        'role': role,
         'id': id,
         'firstName': firstName,
         'middleName': middleName,
@@ -67,17 +79,19 @@ class SellerModel {
         'kebele': kebele,
       };
 
-  SellerModel copyWith({
+  EmployeeModel copyWith({
     String? firstName,
-    String? image,
+    String? profile,
   }) =>
-      SellerModel(
+      EmployeeModel(
         id: id,
+        idCard: idCard,
+        approved: approved,
         firstName: firstName ?? this.firstName,
         middleName: middleName,
         lastName: lastName,
         phoneNumber: phoneNumber,
-        image: image ?? this.image,
+        profile: profile ?? this.profile,
         email: email,
         country: country,
         region: region,
@@ -85,5 +99,6 @@ class SellerModel {
         zone: zone,
         woreda: woreda,
         kebele: kebele,
+        role: role,
       );
 }

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sellers/constants/constants.dart';
-import 'package:sellers/constants/primary_button.dart';
+import 'package:sellers/constants/custom_button.dart';
 import 'package:sellers/controllers/firebase_storage_helper.dart';
 import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/models/product_model.dart';
@@ -199,7 +199,7 @@ class _EditProductState extends State<EditProduct> {
           SizedBox(height: 12),
           const SizedBox(height: 20),
           SizedBox(
-              child: PrimaryButton(
+              child: CustomButton(
                   onPressed: () async {
                     () async {
                       if (image == null && name.text.isEmpty) {

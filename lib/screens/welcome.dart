@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sellers/constants/primary_button.dart';
+import 'package:sellers/constants/custom_button.dart';
 import 'package:sellers/constants/routes.dart';
 import 'package:sellers/constants/top_titles.dart';
 import 'package:sellers/screens/login.dart';
@@ -27,30 +27,8 @@ class Welcome extends StatelessWidget {
                   scale: 1,
                 ),
               ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     // CupertinoButton(
-              //     //   onPressed: () {},
-              //     //   padding: EdgeInsets.zero,
-              //     //   child: const Icon(
-              //     //     Icons.facebook,
-              //     //     size: 35,
-              //     //     color: Colors.blue,
-              //     //   ),
-              //     // ),
-              //     // CupertinoButton(
-              //     //   onPressed: () {},
-              //     //   child: Image.asset(
-              //     //     AssetImages.instance.googleLogo,
-              //     //     scale: 80,
-              //     //   ),
-              //     // ),
-              //   ],
-              // ),
-
               const SizedBox(height: 20),
-              PrimaryButton(
+              CustomButton(
                 title: 'Sign In',
                 onPressed: () {
                   Routes.instance.push(widget: const Login(), context: context);
@@ -59,7 +37,7 @@ class Welcome extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              PrimaryButton(
+              CustomButton(
                 title: 'Sign Up',
                 onPressed: () {
                   Routes.instance

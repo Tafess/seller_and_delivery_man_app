@@ -4,16 +4,14 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:sellers/constants/constants.dart';
-import 'package:sellers/controllers/firebase_auth_helper.dart';
 import 'package:sellers/controllers/firebase_storage_helper.dart';
 import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/models/order_model.dart';
 import 'package:sellers/models/product_model.dart';
-import 'package:sellers/models/seller_model.dart';
+import 'package:sellers/models/employee_model.dart';
 
 class FirebaseFirestoreHelper {
   static FirebaseFirestoreHelper instance = FirebaseFirestoreHelper();
@@ -25,26 +23,44 @@ class FirebaseFirestoreHelper {
       List<CategoryModel> categoriesList = querySnapshot.docs
           .map((e) => CategoryModel.fromJson(e.data()))
           .toList();
-      return categoriesList; // Return the mapped categoriesList
+      return categoriesList;
     } catch (e) {
       showMessage(e.toString());
       return [];
     }
   }
 
-  // Future<List<ProductModel>> getBestProducts() async {
-  //   try {
-  //     QuerySnapshot<Map<String, dynamic>> querySnapshot =
-  //         await _firebaseFirestore.collectionGroup('products').get();
-  //     List<ProductModel> productModelList = querySnapshot.docs
-  //         .map((e) => ProductModel.fromJson(e.data()))
-  //         .toList();
-  //     return productModelList; // Return the mapped productModelList
-  //   } catch (e) {
-  //     showMessage(e.toString());
-  //     return [];
-  //   }
-  // }
+  Stream<List<ProductModel>> getProductsStream() {
+    return _firebaseFirestore
+        .collectionGroup('products')
+        .where('sellerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .snapshots()
+        .map((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+      print('Number of Products.....: ${querySnapshot.size}');
+
+      List<ProductModel> productList = querySnapshot.docs
+          .map((e) => ProductModel.fromJson(e.data()))
+          .toList();
+
+      print('Product List: $productList');
+      return productList;
+    });
+  }
+
+  Future<List<ProductModel>> getProducts() async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firebaseFirestore
+        .collectionGroup('products')
+        // .where('sellerId', isEqualTo: 'FirebaseAuth.instance.currentUser!.uid')
+        .get();
+
+    print('Number of Products: ${querySnapshot.size}');
+
+    List<ProductModel> productList =
+        querySnapshot.docs.map((e) => ProductModel.fromJson(e.data())).toList();
+
+    print('Product List: $productList');
+    return productList;
+  }
 
   Future<List<ProductModel>> getCategoryViewProduct(String id) async {
     try {
@@ -64,13 +80,13 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<SellerModel> getUserInformation() async {
+  Future<EmployeeModel> getUserInformation() async {
     DocumentSnapshot<Map<String, dynamic>> querySnapshot =
         await _firebaseFirestore
             .collection('sellers')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .get();
-    return SellerModel.fromJson(querySnapshot.data()!);
+    return EmployeeModel.fromJson(querySnapshot.data()!);
   }
 
   Future<bool> uploadOrderedProductFirebase(
@@ -184,13 +200,13 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<List<SellerModel>> getUserList() async {
+  Future<List<EmployeeModel>> getUserList() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firebaseFirestore
         .collection('sellers')
         .where('id', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .get();
     return querySnapshot.docs
-        .map((e) => SellerModel.fromJson(e.data()))
+        .map((e) => EmployeeModel.fromJson(e.data()))
         .toList();
   }
 
@@ -201,7 +217,7 @@ class FirebaseFirestoreHelper {
       List<CategoryModel> categoriesList = querySnapshot.docs
           .map((e) => CategoryModel.fromJson(e.data()))
           .toList();
-      return categoriesList; // Return the mapped categoriesList
+      return categoriesList;
     } catch (e) {
       showMessage(e.toString());
       return [];
@@ -217,16 +233,9 @@ class FirebaseFirestoreHelper {
     }
   }
 
-////// £££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££
-  ///
-  ///
-  ///
-  ///
-  ///
-  ///
-  ///
-  ///
-  Future<void> updateUser(SellerModel userModel) async {
+// ----------------------------------------------------------------
+
+  Future<void> updateUser(EmployeeModel userModel) async {
     try {
       await _firebaseFirestore
           .collection('users')
@@ -259,38 +268,16 @@ class FirebaseFirestoreHelper {
     DocumentReference<Map<String, dynamic>> reference =
         _firebaseFirestore.collection('categories').doc();
     String imageUrl = await FirebaseStorageHelper.instance
-        .uploadSellerImage(reference.id, image);
+        .uploadProductImage(reference.id, image);
     CategoryModel addCategory =
         CategoryModel(image: imageUrl, id: reference.id, name: name);
     await reference.set(addCategory.toJson());
     return addCategory;
   }
 
-  ///////// products /////////////
-  ///
-  Future<List<ProductModel>> getProducts() async {
-    QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firebaseFirestore
-        .collectionGroup('products')
-        .where('sellerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .get();
-
-    print('Number of Products: ${querySnapshot.size}');
-
-    List<ProductModel> productList =
-        querySnapshot.docs.map((e) => ProductModel.fromJson(e.data())).toList();
-
-    print('Product List: $productList');
-    return productList;
-  }
-
-  Future<String> deleteProduct(String categoryId, String productId) async {
+  Future<String> deleteProduct(String id) async {
     try {
-      await _firebaseFirestore
-          .collection('categories')
-          .doc(categoryId)
-          .collection('products')
-          .doc(productId)
-          .delete();
+      await _firebaseFirestore.collection('products').doc(id).delete();
 
       await Future.delayed(const Duration(seconds: 1), () {});
       return 'Successfully deleted';
@@ -299,16 +286,11 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<void> updateSingleProduct(ProductModel productModel) async {
+  Future<void> updateproduct(ProductModel productModel) async {
     try {
-      DocumentReference productRef = _firebaseFirestore
-          .collection('categories')
-          .doc(productModel.categoryId) // Use categoryId as the document ID
-          .collection('products')
-          .doc(productModel.id); // Use productId as the document ID
-
+      DocumentReference productRef =
+          _firebaseFirestore.collection('products').doc(productModel.id);
       DocumentSnapshot productSnapshot = await productRef.get();
-
       if (productSnapshot.exists) {
         await productRef.update(productModel.toJson());
         showMessage('Udated successfully');
@@ -318,7 +300,7 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<ProductModel> addSingleProduct(
+  Future<ProductModel> addProduct(
     File image,
     String name,
     String categoryId,
@@ -328,27 +310,14 @@ class FirebaseFirestoreHelper {
     String quantity,
     String size,
     String measurement,
+    // String startDate,
+    // String endDate,
   ) async {
-    DocumentReference<Map<String, dynamic>> reference = _firebaseFirestore
-        .collection('categories')
-        .doc(categoryId)
-        .collection('products')
-        .doc();
-
-    ///////////////////////////
-
-    DocumentReference admin =
-        _firebaseFirestore.collection('adminProducts').doc(reference.id);
+    DocumentReference<Map<String, dynamic>> reference =
+        _firebaseFirestore.collection('products').doc();
     String sellerId = FirebaseAuth.instance.currentUser!.uid;
-
-    admin.set({
-      'productId': admin.id,
-      'sellerId': sellerId,
-      'name': name,
-      'categoryId': categoryId,
-    });
     String imageUrl = await FirebaseStorageHelper.instance
-        .uploadSellerImage(reference.id, image);
+        .uploadproductImage(reference.id, image);
     ProductModel addProduct = ProductModel(
       image: imageUrl,
       id: reference.id,
@@ -365,22 +334,59 @@ class FirebaseFirestoreHelper {
       disabled: false,
       productId: reference.id,
       sellerId: sellerId,
+      //   startDate: DateTime.now(),
+      //   endDate: DateTime.parse(endDate),
     );
     await reference.set(addProduct.toJson());
     return addProduct;
   }
 
-  Future<List<OrderModel>> getAllOrderList() async {
-    QuerySnapshot<Map<String, dynamic>> allOrders = await _firebaseFirestore
-        .collection('orders')
-        .where('sellerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .get();
+////----------------------------------------------------------------------
+  Stream<EmployeeModel> getSellersInfo({bool? approved, String? role}) {
+    Query query = FirebaseFirestore.instance.collection('sellers');
+    query = query
+      ..where('sellerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid);
 
-    List<OrderModel> allOrderList =
-        allOrders.docs.map((e) => OrderModel.fromJson(e.data())).toList();
-    return allOrderList;
+    return query.snapshots().map((querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        var doc = querySnapshot.docs.first;
+        EmployeeModel employeeModel =
+            EmployeeModel.fromJson(doc.data() as Map<String, dynamic>);
+        return employeeModel;
+      } else {
+        return EmployeeModel(approved: approved!, role: role!);
+      }
+    });
   }
 
+//-----------------------------------------------------------------------
+  Stream<List<OrderModel>> getOrderListStream({String? status}) {
+    CollectionReference<Map<String, dynamic>> ordersCollection =
+        _firebaseFirestore.collection('orders');
+    // ..where('sellerId',
+    //     isEqualTo: FirebaseAuth.instance.currentUser!.uid);
+    Query<Map<String, dynamic>> query = status != null
+        ? ordersCollection.where('status', isEqualTo: status)
+        : ordersCollection;
+
+    return query.snapshots().map(
+          (QuerySnapshot<Map<String, dynamic>> ordersSnapshot) => ordersSnapshot
+              .docs
+              .map((e) => OrderModel.fromJson(e.data()))
+              .toList(),
+        );
+  }
+  //final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+
+  Stream<int> getOrderCountByStatus(String status) {
+    return _firebaseFirestore
+        .collection('orders')
+        .where('status', isEqualTo: status)
+        .snapshots()
+        .map((querySnapshot) => querySnapshot.size);
+  }
+
+  //----------------------------------------------------------------
   Future<List<OrderModel>> getCompletedOrderList() async {
     QuerySnapshot<Map<String, dynamic>> completedOrders =
         await _firebaseFirestore
@@ -388,105 +394,10 @@ class FirebaseFirestoreHelper {
             .where('sellerId',
                 isEqualTo: FirebaseAuth.instance.currentUser!.uid)
             .where('status', isEqualTo: 'completed')
-            // .where('status', isEqualTo: 'completed')
             .get();
 
     List<OrderModel> completedOrderList =
         completedOrders.docs.map((e) => OrderModel.fromJson(e.data())).toList();
     return completedOrderList;
   }
-
-  Future<List<OrderModel>> getPendingOrders() async {
-    QuerySnapshot<Map<String, dynamic>> pendingOrders = await _firebaseFirestore
-        .collection('orders')
-        .where('sellerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .where('status', isEqualTo: 'pending')
-        // .where('status', isEqualTo: 'completed')
-        .get();
-
-    List<OrderModel> pendingOrderList =
-        pendingOrders.docs.map((e) => OrderModel.fromJson(e.data())).toList();
-    return pendingOrderList;
-  }
-
-  Future<List<OrderModel>> getCancelOrders() async {
-    QuerySnapshot<Map<String, dynamic>> pendingOrders = await _firebaseFirestore
-        .collection('orders')
-        .where('sellerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .where('status', isEqualTo: 'canceled')
-        //.where('status', isEqualTo: 'completed')
-        .get();
-
-    List<OrderModel> canceledOrderList =
-        pendingOrders.docs.map((e) => OrderModel.fromJson(e.data())).toList();
-    return canceledOrderList;
-  }
-
-  Future<List<OrderModel>> getDeliveryOrders() async {
-    QuerySnapshot<Map<String, dynamic>> pendingOrders = await _firebaseFirestore
-        .collection('orders')
-        .where('sellerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .where('status', isEqualTo: 'delivery')
-        //.where('status', isEqualTo: 'completed')
-        .get();
-
-    List<OrderModel> getDeliveryOrders =
-        pendingOrders.docs.map((e) => OrderModel.fromJson(e.data())).toList();
-    return getDeliveryOrders;
-  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // Future<void> updateOrder(OrderModel orderModel, String status) async {
-  //   try {
-  //     DocumentSnapshot orderSnapshot = await _firebaseFirestore
-  //         .collection('orders')
-  //         .doc(orderModel.orderId)
-  //         .get();
-
-  //     if (orderSnapshot.exists) {
-  //       String userIdFromDatabase = orderSnapshot['userId'];
-
-  //       //  print('userIdFromDatabase: $userIdFromDatabase');
-
-  //       await _firebaseFirestore
-  //           .collection('userOrders')
-  //           .doc(userIdFromDatabase)
-  //           .collection('orders')
-  //           .doc(orderModel.orderId)
-  //           .update({'status': status});
-
-  //       await _firebaseFirestore
-  //           .collection('orders')
-  //           .doc(orderModel.orderId)
-  //           .update({'status': status});
-  //     } else {
-  //       print('Document does not exist.');
-  //     }
-  //   } catch (e) {
-  //     print('Error updating order: $e');
-  //   }
-

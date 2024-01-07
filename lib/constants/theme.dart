@@ -6,7 +6,7 @@ ThemeData themeData = ThemeData(
     scaffoldBackgroundColor: Colors.white,
     primaryColor: Colors.blue,
     primarySwatch: Colors.green,
-    canvasColor: Colors.red,
+    // canvasColor: Colors.red,
 
     ////////////////////////////////////////////////
     inputDecorationTheme: InputDecorationTheme(
@@ -37,8 +37,11 @@ ThemeData themeData = ThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.grey,
         disabledBackgroundColor: Colors.grey, // Add this line
-        textStyle:  TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white,fontFamily: 'Regular'),
+        textStyle: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontFamily: 'Regular'),
       ),
     ),
     appBarTheme: AppBarTheme(
@@ -46,14 +49,13 @@ ThemeData themeData = ThemeData(
       elevation: 2,
       titleSpacing: 2,
       foregroundColor: Colors.black,
-      titleTextStyle: TextStyle(fontSize: 22, color: Colors.black54,fontFamily: 'Regular'),
+      titleTextStyle:
+          TextStyle(fontSize: 22, color: Colors.black54, fontFamily: 'Regular'),
       iconTheme: IconThemeData(color: Colors.grey.shade700),
     ),
     textTheme: TextTheme(
       displayLarge: TextStyle(
-        color: Colors.grey.shade700,
-        fontSize: 28,fontFamily: 'Regular'
-      ),
+          color: Colors.grey.shade700, fontSize: 28, fontFamily: 'Regular'),
       displayMedium: TextStyle(
           color: Colors.blue.shade700,
           fontSize: 22,
@@ -65,10 +67,7 @@ ThemeData themeData = ThemeData(
       bodyLarge:
           TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Regular'),
       bodyMedium: TextStyle(color: Colors.white, fontSize: 14),
-    )
-    
-    
-    );
+    ));
 
 
 // OutlineInputBorder outlineInputBorder = const OutlineInputBorder(

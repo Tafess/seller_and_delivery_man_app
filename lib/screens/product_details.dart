@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sellers/constants/constants.dart';
-import 'package:sellers/constants/primary_button.dart';
+import 'package:sellers/constants/custom_button.dart';
 import 'package:sellers/controllers/firebase_firestore_helper.dart';
 import 'package:sellers/controllers/firebase_storage_helper.dart';
 import 'package:sellers/models/catagory_model.dart';
@@ -294,7 +294,7 @@ class _ProductDetailsState extends State<ProductDetails> {
               const SizedBox(height: 20),
               if (!_editable)
                 SizedBox(
-                    child: PrimaryButton(
+                    child: CustomButton(
                         onPressed: () async {
                           if (image == null && name.text.isEmpty) {
                             Navigator.of(context).pop();
@@ -556,7 +556,7 @@ class _ProductDetailsState extends State<ProductDetails> {
 //               SizedBox(
 //                 height: 40,
 //                 width: 100,
-//                 child: PrimaryButton(
+//                 child: CustomButton(
 //                   onPressed: () {
 //                     ProductModel productModel =
 //                         widget.singleProduct.copyWith(quantity: quantity);
@@ -791,7 +791,7 @@ class _ProductDetailsState extends State<ProductDetails> {
 //               SizedBox(
 //                 height: 40,
 //                 width: 100,
-//                 child: PrimaryButton(
+//                 child: CustomButton(
 //                   onPressed: () {
 //                     ProductModel productModel =
 //                         widget.singleProduct.copyWith(quantity: quantity);

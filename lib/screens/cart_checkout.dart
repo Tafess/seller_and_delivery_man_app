@@ -1,7 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sellers/constants/primary_button.dart';
+import 'package:sellers/constants/custom_button.dart';
 import 'package:sellers/constants/routes.dart';
 import 'package:sellers/controllers/firebase_firestore_helper.dart';
 import 'package:sellers/providers/app_provider.dart';
@@ -25,7 +24,6 @@ class _CartItemCheckoutState extends State<CartItemCheckout> {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
-       
         foregroundColor: Colors.white,
         title: const Text('Checkout'),
         actions: const [
@@ -103,7 +101,7 @@ class _CartItemCheckoutState extends State<CartItemCheckout> {
               ),
             ),
             const SizedBox(height: 20),
-            PrimaryButton(
+            CustomButton(
               title: 'Continue',
               onPressed: () async {
                 if (groupValue == 1) {

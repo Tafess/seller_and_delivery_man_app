@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -35,6 +35,7 @@ snackBar(context, message) {
   ));
 }
 
+
 ShowLoderDialog(BuildContext context) {
   AlertDialog alert = AlertDialog(
     content: Builder(builder: (context) {
@@ -43,8 +44,10 @@ ShowLoderDialog(BuildContext context) {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CircularProgressIndicator(
-              color: Colors.red,
+            Center(
+              child:  CircularProgressIndicator(
+                color: Colors.red,
+              ),
             ),
             const SizedBox(
               height: 18,

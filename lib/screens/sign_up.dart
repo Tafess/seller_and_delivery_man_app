@@ -1,12 +1,15 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:csc_picker/csc_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sellers/constants/constants.dart';
-import 'package:sellers/constants/primary_button.dart';
+import 'package:sellers/constants/custom_text.dart';
 import 'package:sellers/constants/routes.dart';
-import 'package:sellers/constants/top_titles.dart';
 import 'package:sellers/controllers/firebase_auth_helper.dart';
 import 'package:sellers/screens/login.dart';
 import 'package:sellers/widgets/bottom_bar.dart';
@@ -31,26 +34,115 @@ class _SignUpState extends State<SignUp> {
   TextEditingController zone = TextEditingController();
   TextEditingController woreda = TextEditingController();
   TextEditingController kebele = TextEditingController();
+  List<String> role = ['seller', 'delivery'];
+  String? _selectedRole;
 
   String? countryValue;
   String? stateValue;
 
   String? cityValue;
+
+  File? idCard;
+  File? profile;
+
+  void takePicture(void Function(File?) updateFile) async {
+    XFile? value = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (value != null) {
+      setState(() {
+        updateFile(File(value.path));
+      });
+    }
+  }
+
+  void takeIdCardPicture() {
+    takePicture((File? newIdCard) {
+      idCard = newIdCard;
+    });
+  }
+
+  void takeProfilePicture() {
+    takePicture((File? newProfile) {
+      profile = newProfile;
+    });
+  }
+
+  // File? idCard;
+  // File? profile;
+  // void takeIdCardPicture() async {
+  //   XFile? value = await ImagePicker().pickImage(source: ImageSource.gallery);
+  //   if (value != null) {
+  //     setState(() {
+  //       idCard = File(value.path);
+  //     });
+  //   }
+  // }
+
+  // void takeProfilePictur() async {
+  //   XFile? value = await ImagePicker().pickImage(source: ImageSource.gallery);
+  //   if (value != null) {
+  //     setState(() {
+  //       profile = File(value.path);
+  //     });
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Registration'),
+          title: Text('Employee Registration'),
         ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 25),
+          padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 25),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 //Icon(Icons.arrow_back),
+                idCard == null
+                    ? CupertinoButton(
+                        onPressed: () {
+                          takeIdCardPicture();
+                        },
+                        child: const CircleAvatar(
+                          radius: 55,
+                          child: Icon(Icons.camera_alt),
+                        ),
+                      )
+                    : CupertinoButton(
+                        onPressed: () {
+                          takeIdCardPicture();
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 200,
+                          child: Image.file(idCard!),
+                        ),
+                      ),
 
+                Container(
+                  child: profile == null
+                      ? CupertinoButton(
+                          onPressed: () {
+                            takeProfilePicture();
+                          },
+                          child: const CircleAvatar(
+                            radius: 55,
+                            child: Icon(Icons.camera_alt),
+                          ),
+                        )
+                      : CupertinoButton(
+                          onPressed: () {
+                            takeProfilePicture();
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 200,
+                            child: Image.file(profile!),
+                          ),
+                        ),
+                ),
                 SizedBox(
                   height: 12,
                 ),
@@ -176,7 +268,9 @@ class _SignUpState extends State<SignUp> {
                         });
                       },
                       child: Icon(
-                        Icons.visibility,
+                        isShowPassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                     ),
                   ),
@@ -207,7 +301,9 @@ class _SignUpState extends State<SignUp> {
                         });
                       },
                       child: Icon(
-                        Icons.visibility,
+                        isShowPassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                     ),
                   ),
@@ -322,6 +418,25 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 SizedBox(height: 12),
+                DropdownButtonFormField(
+                  dropdownColor: Colors.white,
+                  value: _selectedRole,
+                  hint: Text('Sellect your applying role'),
+                  isExpanded: true,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedRole = value;
+                    });
+                  },
+                  items:
+                      role.map<DropdownMenuItem<String>>((String selectedUnit) {
+                    return DropdownMenuItem<String>(
+                      value: selectedUnit,
+                      child: Text(selectedUnit),
+                    );
+                  }).toList(),
+                ),
+
                 SizedBox(
                   height: 50,
                 ),
@@ -345,8 +460,31 @@ class _SignUpState extends State<SignUp> {
                           phone.text,
                         );
                         if (isValidate) {
-                          bool islogined =
+                          //   bool islogined =
+                          //       await FirebaseAuthHelper.instance.signUp(
+                          //     firstName.text,
+                          //     middleName.text,
+                          //     lastName.text,
+                          //     phone.text,
+                          //     email.text,
+                          //     password.text,
+                          //     countryValue!,
+                          //     stateValue!,
+                          //     cityValue!,
+                          //     zone.text,
+                          //     woreda.text,
+                          //     kebele.text,
+                          //     context,
+                          //   );
+                          //   if (islogined) {
+                          //     Routes.instance.pushAndRemoveUntil(
+                          //         widget: CustomBottomBar(), context: context);
+                          //   }
+                          // }
+                          bool isRegistered =
                               await FirebaseAuthHelper.instance.signUp(
+                            idCard!,
+                            profile!,
                             firstName.text,
                             middleName.text,
                             lastName.text,
@@ -359,11 +497,18 @@ class _SignUpState extends State<SignUp> {
                             zone.text,
                             woreda.text,
                             kebele.text,
+                            _selectedRole!,
                             context,
                           );
-                          if (islogined) {
+
+                          if (isRegistered) {
+                            // After successful registration, set the user role
+                            await _setUserRole(_selectedRole!);
+
                             Routes.instance.pushAndRemoveUntil(
-                                widget: CustomBottomBar(), context: context);
+                              widget: CustomBottomBar(),
+                              context: context,
+                            );
                           }
                         }
                       }
@@ -420,5 +565,19 @@ class _SignUpState extends State<SignUp> {
         ],
       ),
     );
+  }
+
+  Future<void> _setUserRole(String role) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      // Set custom claims for the user
+      // await user!.({'role': role});
+
+      // Update the user's ID token to include custom claims
+      //await user.getIdToken(true);
+    } catch (e) {
+      print('Error setting user role: $e');
+    }
   }
 }
