@@ -7,6 +7,7 @@ class CustomButton extends StatelessWidget {
   final double? width;
   final double? height;
   final TextStyle? textStyle;
+  final EdgeInsetsGeometry? padding;
   const CustomButton({
     super.key,
     this.onPressed,
@@ -15,31 +16,35 @@ class CustomButton extends StatelessWidget {
     this.width,
     this.height,
     this.textStyle,
+    this.padding,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height ?? 40,
-      width: width ?? MediaQuery.of(context).size.width,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(color ?? Colors.black45),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              side: BorderSide(color: color ?? Colors.black12, width: 1.0),
+    return Padding(
+      padding: padding ?? EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: SizedBox(
+        height: height ?? 40,
+        width: width ?? MediaQuery.of(context).size.width,
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(color ?? Colors.black45),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                side: BorderSide(color: color ?? Colors.black12, width: 1.0),
+              ),
             ),
           ),
-        ),
-        child: Text(
-          title,
-          style: textStyle ??
-              const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16),
+          child: Text(
+            title,
+            style: textStyle ??
+                const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
+          ),
         ),
       ),
     );

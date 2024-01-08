@@ -83,7 +83,7 @@ class FirebaseFirestoreHelper {
   Future<EmployeeModel> getUserInformation() async {
     DocumentSnapshot<Map<String, dynamic>> querySnapshot =
         await _firebaseFirestore
-            .collection('sellers')
+            .collection('employees')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .get();
     return EmployeeModel.fromJson(querySnapshot.data()!);
@@ -164,7 +164,7 @@ class FirebaseFirestoreHelper {
     String? token = await FirebaseMessaging.instance.getToken();
     if (token != null) {
       await _firebaseFirestore
-          .collection('sellers')
+          .collection('employees')
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .update({'notificationToken': token});
     }
@@ -202,7 +202,7 @@ class FirebaseFirestoreHelper {
 
   Future<List<EmployeeModel>> getUserList() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firebaseFirestore
-        .collection('sellers')
+        .collection('employees')
         .where('id', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .get();
     return querySnapshot.docs
@@ -226,7 +226,7 @@ class FirebaseFirestoreHelper {
 
   Future<String> deleteSingleUser(String id) async {
     try {
-      _firebaseFirestore.collection('users').doc(id).delete();
+      _firebaseFirestore.collection('employees').doc(id).delete();
       return 'Successfully deleted';
     } catch (e) {
       return e.toString();
@@ -238,12 +238,13 @@ class FirebaseFirestoreHelper {
   Future<void> updateUser(EmployeeModel userModel) async {
     try {
       await _firebaseFirestore
-          .collection('users')
+          .collection('employees')
           .doc(userModel.id)
           .update(userModel.toJson());
     } catch (e) {}
   }
 
+//----------------------------------------------------------------
   Future<String> deleteSingleCategory(String id) async {
     try {
       await _firebaseFirestore.collection('categories').doc(id).delete();
@@ -255,6 +256,7 @@ class FirebaseFirestoreHelper {
     }
   }
 
+//----------------------------------------------------------------
   Future<void> updateSingleCategory(CategoryModel categoryModel) async {
     try {
       await _firebaseFirestore
@@ -264,6 +266,7 @@ class FirebaseFirestoreHelper {
     } catch (e) {}
   }
 
+//----------------------------------------------------------------
   Future<CategoryModel> addSingleCategory(File image, String name) async {
     DocumentReference<Map<String, dynamic>> reference =
         _firebaseFirestore.collection('categories').doc();
@@ -275,6 +278,7 @@ class FirebaseFirestoreHelper {
     return addCategory;
   }
 
+//----------------------------------------------------------------
   Future<String> deleteProduct(String id) async {
     try {
       await _firebaseFirestore.collection('products').doc(id).delete();
@@ -286,6 +290,7 @@ class FirebaseFirestoreHelper {
     }
   }
 
+//----------------------------------------------------------------
   Future<void> updateproduct(ProductModel productModel) async {
     try {
       DocumentReference productRef =
@@ -299,7 +304,7 @@ class FirebaseFirestoreHelper {
       print(e.toString());
     }
   }
-
+//----------------------------------------------------------------
   Future<ProductModel> addProduct(
     File image,
     String name,
@@ -310,8 +315,8 @@ class FirebaseFirestoreHelper {
     String quantity,
     String size,
     String measurement,
-    // String startDate,
-    // String endDate,
+    String startDate,
+    String endDate,
   ) async {
     DocumentReference<Map<String, dynamic>> reference =
         _firebaseFirestore.collection('products').doc();
@@ -334,8 +339,8 @@ class FirebaseFirestoreHelper {
       disabled: false,
       productId: reference.id,
       sellerId: sellerId,
-      //   startDate: DateTime.now(),
-      //   endDate: DateTime.parse(endDate),
+      startDate: DateTime.now(),
+      endDate: DateTime.parse(endDate),
     );
     await reference.set(addProduct.toJson());
     return addProduct;
@@ -343,7 +348,7 @@ class FirebaseFirestoreHelper {
 
 ////----------------------------------------------------------------------
   Stream<EmployeeModel> getSellersInfo({bool? approved, String? role}) {
-    Query query = FirebaseFirestore.instance.collection('sellers');
+    Query query = FirebaseFirestore.instance.collection('employees');
     query = query
       ..where('sellerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid);
 
@@ -362,9 +367,9 @@ class FirebaseFirestoreHelper {
 //-----------------------------------------------------------------------
   Stream<List<OrderModel>> getOrderListStream({String? status}) {
     CollectionReference<Map<String, dynamic>> ordersCollection =
-        _firebaseFirestore.collection('orders');
-    // ..where('sellerId',
-    //     isEqualTo: FirebaseAuth.instance.currentUser!.uid);
+        _firebaseFirestore.collection('orders')
+          ..where('sellerId',
+              isEqualTo: FirebaseAuth.instance.currentUser!.uid);
     Query<Map<String, dynamic>> query = status != null
         ? ordersCollection.where('status', isEqualTo: status)
         : ordersCollection;
@@ -376,7 +381,7 @@ class FirebaseFirestoreHelper {
               .toList(),
         );
   }
-  //final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  //----------------------------------------------------------------
 
   Stream<int> getOrderCountByStatus(String status) {
     return _firebaseFirestore
@@ -400,4 +405,48 @@ class FirebaseFirestoreHelper {
         completedOrders.docs.map((e) => OrderModel.fromJson(e.data())).toList();
     return completedOrderList;
   }
+
+//----------------------------------------------------------------
+  Future<void> updateDeliveryOrder(OrderModel orderModel, String status) async {
+    String deliveryId = FirebaseAuth.instance.currentUser!.uid;
+
+    try {
+      DocumentSnapshot<Map<String, dynamic>> sellerSnapshot =
+          await _firebaseFirestore.collection('employees').doc(deliveryId).get();
+
+      if (sellerSnapshot.exists) {
+        String deliveryName = sellerSnapshot['firstName'];
+        String deliveryPhone = sellerSnapshot['phoneNumber'];
+
+        String userIdFromDatabase = orderModel.userId;
+        await _firebaseFirestore
+            .collection('userOrders')
+            .doc(userIdFromDatabase)
+            .collection('orders')
+            .doc(orderModel.orderId)
+            .update({
+          'status': status,
+          'delivery': deliveryId,
+          'deliveryName': deliveryName,
+          'deliveryPhone': deliveryPhone,
+        });
+
+        await _firebaseFirestore
+            .collection('orders')
+            .doc(orderModel.orderId)
+            .update({
+          'status': status,
+          'delivery': deliveryId,
+          'deliveryName': deliveryName,
+          'deliveryPhone': deliveryPhone,
+        });
+      } else {
+        print('Seller document does not exist.');
+      }
+    } catch (e) {
+      print('Error updating order: $e');
+      print(orderModel.orderId);
+    }
+  }
+//----------------------------------------------------------------
 }

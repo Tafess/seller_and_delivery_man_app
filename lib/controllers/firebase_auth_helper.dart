@@ -12,7 +12,6 @@ import 'package:sellers/controllers/firebase_firestore_helper.dart';
 import 'package:sellers/controllers/firebase_storage_helper.dart';
 import 'package:sellers/delivery/delivery_home.dart';
 import 'package:sellers/models/employee_model.dart';
-import 'package:sellers/screens/add_product.dart';
 import 'package:sellers/screens/home.dart';
 import 'package:sellers/screens/landing_screen.dart';
 import 'package:sellers/screens/login.dart';
@@ -37,7 +36,7 @@ class FirebaseAuthHelper {
 
       User? user = FirebaseAuth.instance.currentUser;
       FirebaseFirestore.instance
-          .collection('sellers')
+          .collection('employees')
           .doc(user!.uid)
           .get()
           .then((DocumentSnapshot documentSnapshot) {
@@ -101,7 +100,7 @@ class FirebaseAuthHelper {
       );
 
       DocumentReference<Map<String, dynamic>> reference =
-          FirebaseFirestore.instance.collection('sellers').doc();
+          FirebaseFirestore.instance.collection('employees').doc();
 
       String idCardUrl = await FirebaseStorageHelper.instance
           .uploadEmployeeIdCard(reference.id, idCard);
@@ -131,7 +130,7 @@ class FirebaseAuthHelper {
           widget: const CustomBottomBar(), context: context);
 
       _firestore
-          .collection('sellers')
+          .collection('employees')
           .doc(employeeModel.id)
           .set(employeeModel.toJson());
 

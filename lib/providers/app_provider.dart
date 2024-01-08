@@ -35,7 +35,7 @@ class AppProvider with ChangeNotifier {
   //   role: '',
   // );
 
- // EmployeeModel get getUserInformation => _EmployeeModel;
+  // EmployeeModel get getUserInformation => _EmployeeModel;
 
   void addToCartproduct(ProductModel productModel) {
     _cartProductList.add(productModel);
@@ -91,11 +91,11 @@ class AppProvider with ChangeNotifier {
   //   } else {
   //     ShowLoderDialog(context);
 
-      // String imageUrl =
-      //     await FirebaseStorageHelper.instance.uploadSellerImage(_EmployeeModel.id!,image!);
-      // _EmployeeModel = EmployeeModel.copyWith(
-      //   image: imageUrl,
-      // );
+  // String imageUrl =
+  //     await FirebaseStorageHelper.instance.uploadSellerImage(_EmployeeModel.id!,image!);
+  // _EmployeeModel = EmployeeModel.copyWith(
+  //   image: imageUrl,
+  // );
   //     await FirebaseFirestore.instance
   //         .collection('sellers')
   //         .doc(_EmployeeModel.id)
@@ -316,12 +316,9 @@ class AppProvider with ChangeNotifier {
     String startDate,
     String endDate,
   ) async {
-    ProductModel productModel =
-        await FirebaseFirestoreHelper.instance.addProduct(
-      image, name, categoryId, description, price, discount,
-      quantity, size, measurement,
-      // startDate, endDate
-    );
+    ProductModel productModel = await FirebaseFirestoreHelper.instance
+        .addProduct(image, name, categoryId, description, price, discount,
+            quantity, size, measurement, startDate, endDate);
 
     _productlist.add(productModel);
     notifyListeners();
@@ -352,4 +349,7 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
     showMessage('Order canceled from delivery');
   }
+
+
+  
 }

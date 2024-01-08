@@ -21,7 +21,7 @@ class FirebaseStorageHelper {
     String userId = FirebaseAuth.instance.currentUser!.uid;
 
     // Update the 'image' field in the user's Firestore document
-    await FirebaseFirestore.instance.collection('sellers').doc(userId).update({
+    await FirebaseFirestore.instance.collection('employees').doc(userId).update({
       'image': imageUrl,
     });
   }

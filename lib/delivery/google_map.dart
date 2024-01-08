@@ -7,24 +7,24 @@ import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+
 import 'package:sellers/constants/custom_button.dart';
 import 'package:sellers/constants/google_api_keys.dart';
-import 'package:sellers/constants/routes.dart';
 import 'package:sellers/delivery/qr_code_scanner.dart';
+import 'package:sellers/models/order_model.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  final String orderId;
+  const MapScreen({Key? key, required this.orderId}) : super(key: key);
 
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
 
 class _MapScreenState extends State<MapScreen> {
-  //  final store = GetStorage();
-  //   String address = store.read('address');
   Completer<GoogleMapController> _controller = Completer();
   LocationData? _currentPosition;
   LatLng? _latLong;
@@ -115,8 +115,7 @@ class _MapScreenState extends State<MapScreen> {
             for (int i = 0; i < steps.length; i++) {
               final Map<String, dynamic> polyline =
                   steps[i]['polyline']['points'];
-              List<LatLng> decodedPolyline = decodePolyline(
-                  polyline as String); // Helper function to decode polyline
+              List<LatLng> decodedPolyline = decodePolyline(polyline as String);
 
               polylinePoints.addAll(decodedPolyline);
             }
@@ -173,17 +172,41 @@ class _MapScreenState extends State<MapScreen> {
     return polylinePoints;
   }
 
+  //----------------------------------------------------------------
+  Future<void> _getDestinationAddress() async {
+    try {
+      DocumentSnapshot orderSnapshot = await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(widget.orderId)
+          .get();
+
+      if (orderSnapshot.exists) {
+        double destinationLatitude = orderSnapshot['latitude'];
+        double destinationLongitude = orderSnapshot['longitude'];
+
+        LatLng destinationLatLng =
+            LatLng(destinationLatitude, destinationLongitude);
+
+        // Start fetching and displaying the route
+        _fetchAndDisplayRoute(_latLong!, destinationLatLng);
+      } else {
+        print('Order document does not exist.');
+      }
+    } catch (e) {
+      print('Error getting destination address: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Stack(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * .80,
+                height: MediaQuery.of(context).size.height * .84,
                 decoration: const BoxDecoration(
                     border: Border(bottom: BorderSide(color: Colors.grey))),
                 child: Stack(
@@ -222,66 +245,101 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   ],
                 ),
-              )
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                        children: [
+                          _placeMark != null
+                              ? Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 30.0, top: 10),
+                                  child: Container(
+                                    alignment: Alignment.topCenter,
+                                    color: Colors.black38,
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          _placeMark!.street ??
+                                              _placeMark!.name!,
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 4,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              '${_placeMark!.subLocality!} ',
+                                            ),
+                                            Text(_placeMark!.locality != null
+                                                ? '${_placeMark!.subAdministrativeArea!}, '
+                                                : ''),
+                                          ],
+                                        ),
+                                        Text(
+                                            '${_placeMark!.subAdministrativeArea!}, ${_placeMark!.administrativeArea!}, ${_placeMark!.country!},${_placeMark!.country!}')
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : Container(),
+                          SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                Column(
-                  children: [
-                    _placeMark != null
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _placeMark!.subLocality ??
-                                    _placeMark!.locality!,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    '${_placeMark!.locality!} ',
-                                  ),
-                                  Text(_placeMark!.subAdministrativeArea != null
-                                      ? '${_placeMark!.subAdministrativeArea!}, '
-                                      : ''),
-                                ],
-                              ),
-                              Text(
-                                  '${_placeMark!.administrativeArea!}, ${_placeMark!.country!}, ${_placeMark!.postalCode!}')
-                            ],
-                          )
-                        : Container(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        CustomButton(
-                          color: Colors.green,
-                          title: 'Complete',
-                          onPressed: () {
-                            Routes.instance.push(
-                                widget: QrCodeScanner(), context: context);
-                          },
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: 150,
+                child: CustomButton(
+                  color: Colors.green,
+                  title: 'Start',
+                  onPressed: () {
+                    // Call the function to get the destination address
+                    _getDestinationAddress();
+                  },
+                ),
+              ),
+              SizedBox(width: 10),
+              Flexible(
+                child: CustomButton(
+                  color: Colors.green,
+                  title: 'Complete',
+                  onPressed: () {
+                    try {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              QrCodeScanner(orderId: widget.orderId),
                         ),
-                      ],
-                    ),
-                    SizedBox(height: 30),
-                  ],
-                )
-              ],
-            ),
-          )
+                      );
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
