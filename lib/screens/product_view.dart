@@ -46,169 +46,171 @@ class _ProductViewState extends State<ProductView> {
         ],
       ),
       drawer: CustomDrawer(),
-      body: FutureBuilder<List<ProductModel>>(
-        future: _firestoreHelper.getProducts(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Text('No data available');
-          } else {
-            return Stack(
-              children: [
-                text(title: snapshot.data!.length.toString()),
-                SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          headingRowColor: MaterialStateColor.resolveWith(
-                              (states) => Colors.green),
-                          showCheckboxColumn: false,
-                          //columnSpacing: 0.0,
-                          columns: [
-                            DataColumn(
-                                label: Text(
-                              'Image',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            )),
-                            DataColumn(
-                                label: Text('Name',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold))),
-                            DataColumn(
-                                label: Text('Quantity',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold))),
-                            DataColumn(
-                                label: Text('Price',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold))),
-                            DataColumn(
-                                label: Text('Discount',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold))),
-                          ],
-                          rows: snapshot.data!.asMap().entries.map((entry) {
-                            final int rowIndex = entry.key;
-                            final ProductModel product = entry.value;
-                            return DataRow(
-                              color: MaterialStateColor.resolveWith((states) =>
-                                  rowIndex % 2 == 0
-                                      ? Colors.grey
-                                          .shade300 // Zebra color for even rows
-                                      : Colors.white),
-                              cells: [
-                                DataCell(
-                                  SizedBox(
-                                    height: 30,
-                                    width: 30,
-                                    child: Image.network(
-                                      product.image,
-                                      fit: BoxFit.cover,
+      body: Column(
+        children: [
+          FutureBuilder<List<ProductModel>>(
+            future: _firestoreHelper.getProducts(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Text('No data available');
+              } else {
+                return Stack(
+                  children: [
+                    text(title: snapshot.data!.length.toString()),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              headingRowColor: MaterialStateColor.resolveWith(
+                                  (states) => Colors.green),
+                              showCheckboxColumn: false,
+                              //columnSpacing: 0.0,
+                              columns: [
+                                DataColumn(
+                                    label: Text(
+                                  'Image',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                )),
+                                DataColumn(
+                                    label: Text('Name',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold))),
+                                DataColumn(
+                                    label: Text('Quantity',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold))),
+                                DataColumn(
+                                    label: Text('Price',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold))),
+                                DataColumn(
+                                    label: Text('Discount',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold))),
+                              ],
+                              rows: snapshot.data!.asMap().entries.map((entry) {
+                                final int rowIndex = entry.key;
+                                final ProductModel product = entry.value;
+                                return DataRow(
+                                  color: MaterialStateColor.resolveWith(
+                                      (states) => rowIndex % 2 == 0
+                                          ? Colors.grey
+                                              .shade300 // Zebra color for even rows
+                                          : Colors.white),
+                                  cells: [
+                                    DataCell(
+                                      SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                        child: Image.network(
+                                          product.image,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Container(
-                                    width: 60,
-                                    child: Text(
-                                      product.name,
-                                      style: TextStyle(
+                                    DataCell(
+                                      Container(
+                                        width: 60,
+                                        child: Text(
+                                          product.name,
+                                          style: TextStyle(
+                                              overflow: TextOverflow.ellipsis,
+                                              fontSize: 14,
+                                              color: Colors.black),
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Container(
+                                        width: 30,
+                                        child: Text(
+                                          product.quantity.toString(),
                                           overflow: TextOverflow.ellipsis,
-                                          fontSize: 14,
-                                          color: Colors.black),
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Container(
-                                    width: 30,
-                                    child: Text(
-                                      product.quantity.toString(),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                          fontSize: 14, color: Colors.black),
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Text(
-                                    product.price.toStringAsFixed(2),
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      decoration: product.discount != 0.0
-                                          ? TextDecoration.lineThrough
-                                          : null,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  product.discount != 0.0
-                                      ? Text(
-                                          product.discount.toStringAsFixed(2),
+                                          maxLines: 1,
                                           style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.black),
-                                        )
-                                      : Text(''),
-                                ),
-                              ],
-                              onSelectChanged: (selected) {
-                                Routes.instance.push(
-                                  widget: ProductDetails(
-                                    productModel: product,
-                                    index: index,
-                                  ),
-                                  context: context,
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Text(
+                                        product.price.toStringAsFixed(2),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          decoration: product.discount != 0.0
+                                              ? TextDecoration.lineThrough
+                                              : null,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      product.discount != 0.0
+                                          ? Text(
+                                              product.discount
+                                                  .toStringAsFixed(2),
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.black),
+                                            )
+                                          : Text(''),
+                                    ),
+                                  ],
+                                  onSelectChanged: (selected) {
+                                    Routes.instance.push(
+                                      widget: ProductDetails(
+                                        productModel: product,
+                                        index: index,
+                                      ),
+                                      context: context,
+                                    );
+                                  },
                                 );
-                              },
-                            );
-                          }).toList(),
-                        ),
+                              }).toList(),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 100,
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        height: 100,
-                      ),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  bottom: 30,
-                  right: 2,
-                  child: FloatingActionButton(
-                    backgroundColor: Colors.green,
-                    onPressed: () {
-                      Routes.instance.push(
-                        widget: AddProduct(),
-                        context: context,
-                      );
-                    },
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 30,
                     ),
-                  ),
-                ),
-              ],
-            );
-          }
-        },
+                  ],
+                );
+              }
+            },
+          ),
+          FloatingActionButton(
+            backgroundColor: Colors.green,
+            onPressed: () {
+              Routes.instance.push(
+                widget: AddProduct(),
+                context: context,
+              );
+            },
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 30,
+            ),
+          ),
+        ],
       ),
     );
   }

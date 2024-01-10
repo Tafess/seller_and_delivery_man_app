@@ -8,7 +8,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sellers/constants/constants.dart';
-import 'package:sellers/constants/custom_text.dart';
 import 'package:sellers/constants/routes.dart';
 import 'package:sellers/controllers/firebase_auth_helper.dart';
 import 'package:sellers/screens/login.dart';
@@ -460,27 +459,6 @@ class _SignUpState extends State<SignUp> {
                           phone.text,
                         );
                         if (isValidate) {
-                          //   bool islogined =
-                          //       await FirebaseAuthHelper.instance.signUp(
-                          //     firstName.text,
-                          //     middleName.text,
-                          //     lastName.text,
-                          //     phone.text,
-                          //     email.text,
-                          //     password.text,
-                          //     countryValue!,
-                          //     stateValue!,
-                          //     cityValue!,
-                          //     zone.text,
-                          //     woreda.text,
-                          //     kebele.text,
-                          //     context,
-                          //   );
-                          //   if (islogined) {
-                          //     Routes.instance.pushAndRemoveUntil(
-                          //         widget: CustomBottomBar(), context: context);
-                          //   }
-                          // }
                           bool isRegistered =
                               await FirebaseAuthHelper.instance.signUp(
                             idCard!,
@@ -516,7 +494,6 @@ class _SignUpState extends State<SignUp> {
                     style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all(Colors.green.shade400),
-                      // No need to set width here
                       shape: MaterialStateProperty.all(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),

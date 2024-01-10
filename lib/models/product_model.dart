@@ -15,7 +15,7 @@ class ProductModel {
   bool isFavorite;
   bool disabled;
   String productId;
-  String sellerId;
+  String employeeId;
   DateTime? startDate;
   DateTime? endDate;
 
@@ -34,7 +34,7 @@ class ProductModel {
     required this.isFavorite,
     required this.disabled,
     required this.productId,
-    required this.sellerId,
+    required this.employeeId,
     this.startDate,
     this.endDate,
   });
@@ -55,7 +55,7 @@ class ProductModel {
       isFavorite: false,
       disabled: json['disabled'] ?? false,
       productId: json['productId'] ?? '',
-      sellerId: json['sellerId'] ?? '',
+      employeeId: json['employeeId'] ?? '',
       startDate:
           json['startDate'] != null ? DateTime.parse(json['startDate']) : null,
       endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
@@ -78,7 +78,7 @@ class ProductModel {
       'isFavorite': false,
       'disabled': false,
       'productId': productId,
-      'sellerId': sellerId,
+      'employeeId': employeeId,
       'startDate':
           startDate?.toIso8601String() ?? DateTime.now().toIso8601String(),
       'endDate': endDate?.toIso8601String() ?? DateTime.now().toIso8601String(),
@@ -110,7 +110,7 @@ class ProductModel {
       isFavorite: false,
       disabled: false,
       productId: productId,
-      sellerId: sellerId,
+      employeeId: employeeId,
       startDate: DateTime.now(),
       endDate: endDate,
     );
@@ -142,7 +142,7 @@ ProductModel productModelFromJson(String str) =>
 //   bool isFavorite;
 //   bool disabled;
 //   String productId;
-//   String sellerId;
+//   String employeeId;
 //   // DateTime? startDate;
 //   // DateTime? endDate;
 
@@ -161,7 +161,7 @@ ProductModel productModelFromJson(String str) =>
 //     required this.isFavorite,
 //     required this.disabled,
 //     required this.productId,
-//     required this.sellerId,
+//     required this.employeeId,
 //     // this.startDate,
 //     // this.endDate,
 //   });
@@ -182,7 +182,7 @@ ProductModel productModelFromJson(String str) =>
 //       isFavorite: false,
 //       disabled: json['disabled'] ?? false,
 //       productId: json['productId'] ?? '',
-//       sellerId: json['sellerId'] ?? '',
+//       employeeId: json['employeeId'] ?? '',
 //       // startDate: DateTime.parse(json['startDate']).toLocal(),
 //       // endDate: DateTime.parse(json['endDate']).toLocal(),
 //     );
@@ -204,7 +204,7 @@ ProductModel productModelFromJson(String str) =>
 //       'isFavorite': false,
 //       'disabled': false,
 //       'productId': productId,
-//       'sellerId': sellerId,
+//       'employeeId': employeeId,
 //       // 'startDate': DateTime.now(),
 //       // 'endDate': DateTime.now,
 //     };
@@ -235,7 +235,7 @@ ProductModel productModelFromJson(String str) =>
 //         isFavorite: false,
 //         disabled: false,
 //         productId: productId,
-//         sellerId: sellerId,
+//         employeeId: employeeId,
 //         // startDate: DateTime.now(),
 //         // endDate: endDate
 //         );

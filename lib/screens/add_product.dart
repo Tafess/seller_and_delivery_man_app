@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,6 +11,7 @@ import 'package:sellers/constants/constants.dart';
 import 'package:sellers/constants/custom_button.dart';
 import 'package:sellers/constants/custom_snackbar.dart';
 import 'package:sellers/constants/custom_text.dart';
+import 'package:sellers/controllers/firebase_firestore_helper.dart';
 import 'package:sellers/models/catagory_model.dart';
 import 'package:sellers/providers/app_provider.dart';
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
@@ -36,15 +38,17 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
+  final FirebaseFirestoreHelper _firestoreHelper = FirebaseFirestoreHelper();
+
   TextEditingController name = TextEditingController();
   TextEditingController description = TextEditingController();
-
   TextEditingController price = TextEditingController();
   TextEditingController discount = TextEditingController();
   TextEditingController quantity = TextEditingController();
   TextEditingController size = TextEditingController();
   TextEditingController measurement = TextEditingController();
-  CategoryModel? _selectedCategory;
+
+  Object? _selectedCategory;
   List<String> measurments = ['gram', 'ML'];
   String? _selectedUnit;
   bool isDiscountEnabled = false;
@@ -77,11 +81,21 @@ class _AddProductState extends State<AddProduct> {
     ;
   }
 
+  String? gategoryId;
+  Future<QuerySnapshot?> getCategoriesList() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('categories').get();
+   
+    gategoryId = querySnapshot.docs.first.get('id');
+    return querySnapshot;
+  }
+
   @override
   Widget build(BuildContext context) {
     AppProvider appProvider = Provider.of<AppProvider>(
       context,
     );
+
     return Form(
       key: _formKey,
       child: Scaffold(
@@ -125,27 +139,26 @@ class _AddProductState extends State<AddProduct> {
               },
             ),
             const SizedBox(height: 12),
-            DropdownButtonFormField(
-              dropdownColor: Colors.white,
-              value: _selectedCategory,
-              hint: Text(
-                'Select category',
-              ),
-              isExpanded: true,
-              onChanged: (value) {
-                setState(() {
-                  _selectedCategory = value;
-                });
-              },
-              items: appProvider.getCategoryList.map((CategoryModel val) {
-                return DropdownMenuItem(
-                  value: val,
-                  child: Text(
-                    val.name,
-                  ),
-                );
-              }).toList(),
-            ),
+
+            FutureBuilder<QuerySnapshot?>(
+                future: getCategoriesList(),
+                builder: (context, snapshot) {
+                  return DropdownButton(
+                    value: _selectedCategory,
+                    hint: Text('Select  Category'),
+                    items: snapshot.data!.docs.map((e) {
+                      return DropdownMenuItem<String>(
+                        value: e['name'],
+                        child: Text(e['name']),
+                      );
+                    }).toList(),
+                    onChanged: (selectedCategory) {
+                      setState(() {
+                        _selectedCategory = selectedCategory;
+                      });
+                    },
+                  );
+                }),
             const SizedBox(height: 12),
             TextFormField(
               controller: description,
@@ -308,7 +321,7 @@ class _AddProductState extends State<AddProduct> {
                           image!,
                           name.text,
                           description.text,
-                          _selectedCategory!.id,
+                          gategoryId!,
                           price.text.toString(),
                           discount.text.toString(),
                           quantity.text.toString(),
@@ -339,36 +352,3 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 }
-
-
-//  void getGategoriesList(){
-//       FutureBuilder<List<CategoryModel>>(
-//               future: _firestoreHelper.getcategories(),
-//               builder: (context, snapshot) {
-//                 if (snapshot.connectionState == ConnectionState.waiting) {
-//                   return Center(child: CircularProgressIndicator());
-//                 } else if (snapshot.hasError) {
-//                   return Text('Error: ${snapshot.error}');
-//                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-//                   return Text('No categories available');
-//                 } else {
-//                   return DropdownButtonFormField<CategoryModel>(
-//                     dropdownColor: Colors.white,
-//                     value: _selectedCategory,
-//                     hint: Text('Select category'),
-//                     isExpanded: true,
-//                     onChanged: (value) {
-//                       setState(() {
-//                         _selectedCategory = value;
-//                       });
-//                     },
-//                     items: snapshot.data!.map((CategoryModel val) {
-//                       return DropdownMenuItem<CategoryModel>(
-//                         value: val,
-//                         child: Text(val.name),
-//                       );
-//                     }).toList(),
-//                   );
-//                 }
-//               },
-//             );

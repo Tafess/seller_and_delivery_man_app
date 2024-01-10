@@ -27,8 +27,6 @@ void customSnackbar(
         label: closLabel ?? 'Ok',
         textColor: closTextColor ?? Colors.white,
         backgroundColor: backgroundColor ?? Colors.red,
-        onPressed: () {
-          Navigator.of(context).pop();
-        }),
+        onPressed: () {}),
   ));
 }

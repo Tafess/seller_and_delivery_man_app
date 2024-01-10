@@ -60,7 +60,7 @@ class FirebaseAuthHelper {
               backgroundColor: Colors.red,
               margin: 30,
               closTextColor: Colors.white);
-          //  showMessage('Unable to login with this account to the application');
+          
         }
       });
       return true;
@@ -109,7 +109,7 @@ class FirebaseAuthHelper {
           .uploadEmployeeIdCard(reference.id, idCard);
 
       EmployeeModel employeeModel = EmployeeModel(
-        id: userCredential.user!.uid,
+        employeeId: userCredential.user!.uid,
         idCard: idCardUrl,
         firstName: firstName,
         middleName: middleName,
@@ -131,7 +131,7 @@ class FirebaseAuthHelper {
 
       _firestore
           .collection('employees')
-          .doc(employeeModel.id)
+          .doc(employeeModel.employeeId)
           .set(employeeModel.toJson());
 
       Navigator.of(context).pop();
@@ -164,7 +164,7 @@ class FirebaseAuthHelper {
 
   Widget getHomeScreen() {
     return StreamBuilder<EmployeeModel>(
-      stream: _firestoreHelper.getSellersInfo(),
+      stream: _firestoreHelper.getEmployeeInfo(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());

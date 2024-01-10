@@ -85,25 +85,63 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
         ),
       );
 
+//   Widget _getHomeScreen() {
+//     return StreamBuilder<EmployeeModel>(
+//       stream: _firestore.getSellersInfo(),
+//       builder: (context, snapshot) {
+//         if (snapshot.connectionState == ConnectionState.waiting) {
+//           return Center(child: CircularProgressIndicator());
+//         } else if (snapshot.hasError) {
+//           return Text('Error: ${snapshot.error}');
+//         } else {
+//           EmployeeModel? employee = snapshot.data;
+//           print('Seller: $employee');
+//           print(FirebaseAuth.instance.currentUser!.uid);
+
+//           if (employee != null) {
+//             print('Role: ${employee.role}, Approved: ${employee.approved}');
+
+//             if (employee.approved == true) {
+//               if (employee.role == 'delivery') {
+//                 return DeliveryHomeScreen();
+//               } else if (employee.role == 'seller') {
+//                 return HomePage();
+//               } else {
+//                 return Login();
+//               }
+//             } else {
+//               // Handle the case where the user is not approved
+//               return LandingScreen();
+//             }
+//           } else {
+//             // Handle the case where the user data is not available
+//             return Login();
+//           }
+//         }
+//       },
+//     );
+//   }
+// }
+
   Widget _getHomeScreen() {
     return StreamBuilder<EmployeeModel>(
-      stream: _firestore.getSellersInfo(),
+      stream: _firestore.getEmployeeInfo(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
-          EmployeeModel? seller = snapshot.data;
-          print('Seller: $seller');
+          EmployeeModel? employee = snapshot.data;
+          print('Seller: $employee');
           print(FirebaseAuth.instance.currentUser!.uid);
 
-          if (seller != null) {
-            print('Role: ${seller.role}, Approved: ${seller.approved}');
+          if (employee != null) {
+            print('Role: ${employee.role}, Approved: ${employee.approved}');
 
-            if (seller.role == 'delivery' && seller.approved == true) {
+            if (employee.role == 'delivery' && employee.approved == true) {
               return DeliveryHomeScreen();
-            } else if (seller.role == 'seller' && seller.approved == true) {
+            } else if (employee.role == 'seller' && employee.approved == true) {
               return HomePage();
             } else {
               return LandingScreen();

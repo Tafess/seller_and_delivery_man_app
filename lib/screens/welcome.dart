@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sellers/constants/custom_button.dart';
 import 'package:sellers/constants/routes.dart';
-import 'package:sellers/constants/top_titles.dart';
 import 'package:sellers/screens/login.dart';
 import 'package:sellers/screens/sign_up.dart';
 

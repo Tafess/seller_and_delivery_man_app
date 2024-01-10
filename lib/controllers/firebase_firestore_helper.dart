@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:sellers/constants/constants.dart';
 import 'package:sellers/controllers/firebase_storage_helper.dart';
 import 'package:sellers/models/catagory_model.dart';
@@ -16,6 +15,8 @@ import 'package:sellers/models/employee_model.dart';
 class FirebaseFirestoreHelper {
   static FirebaseFirestoreHelper instance = FirebaseFirestoreHelper();
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+
+  //----------------------------------------------------------------
   Future<List<CategoryModel>> getCategories() async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
@@ -30,10 +31,11 @@ class FirebaseFirestoreHelper {
     }
   }
 
+//---------------------------------------------------------------
   Stream<List<ProductModel>> getProductsStream() {
     return _firebaseFirestore
         .collectionGroup('products')
-        .where('sellerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .where('employeeId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .snapshots()
         .map((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
       print('Number of Products.....: ${querySnapshot.size}');
@@ -47,21 +49,21 @@ class FirebaseFirestoreHelper {
     });
   }
 
+//-----------------------------------------------------------------
   Future<List<ProductModel>> getProducts() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firebaseFirestore
         .collectionGroup('products')
-        // .where('sellerId', isEqualTo: 'FirebaseAuth.instance.currentUser!.uid')
+        .where('employeeId',
+            isEqualTo: 'FirebaseAuth.instance.currentUser!.uid')
         .get();
-
-    print('Number of Products: ${querySnapshot.size}');
 
     List<ProductModel> productList =
         querySnapshot.docs.map((e) => ProductModel.fromJson(e.data())).toList();
 
-    print('Product List: $productList');
     return productList;
   }
 
+//----------------------------------------------------------------------
   Future<List<ProductModel>> getCategoryViewProduct(String id) async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
@@ -80,6 +82,7 @@ class FirebaseFirestoreHelper {
     }
   }
 
+//-----------------------------------------------------------------------
   Future<EmployeeModel> getUserInformation() async {
     DocumentSnapshot<Map<String, dynamic>> querySnapshot =
         await _firebaseFirestore
@@ -89,54 +92,56 @@ class FirebaseFirestoreHelper {
     return EmployeeModel.fromJson(querySnapshot.data()!);
   }
 
-  Future<bool> uploadOrderedProductFirebase(
-      List<ProductModel> list, BuildContext context, String payment) async {
-    try {
-      ShowLoderDialog(context);
-      double totalPrice = 0.0;
-      for (var element in list) {
-        totalPrice += element.price * element.quantity;
-      }
-      DocumentReference documentReference = _firebaseFirestore
-          .collection('userOrders')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('orders')
-          .doc();
-      DocumentReference admin =
-          _firebaseFirestore.collection('orders').doc(documentReference.id);
-      String uid = FirebaseAuth.instance.currentUser!.uid;
-      admin.set({
-        'products': list.map((e) => e.toJson()),
-        'status': 'pending',
-        'totalprice': totalPrice,
-        'payment': payment,
-        'userid': uid,
-        'orderId': admin.id,
-        'sellerId': uid,
-      });
+//----------------------------------------------------------------
+  // Future<bool> uploadOrderedProductFirebase(
+  //     List<ProductModel> list, BuildContext context, String payment) async {
+  //   try {
+  //     ShowLoderDialog(context);
+  //     double totalPrice = 0.0;
+  //     for (var element in list) {
+  //       totalPrice += element.price * element.quantity;
+  //     }
+  //     DocumentReference documentReference = _firebaseFirestore
+  //         .collection('userOrders')
+  //         .doc(FirebaseAuth.instance.currentUser!.uid)
+  //         .collection('orders')
+  //         .doc();
+  //     DocumentReference admin =
+  //         _firebaseFirestore.collection('orders').doc(documentReference.id);
+  //     String uid = FirebaseAuth.instance.currentUser!.uid;
+  //     admin.set({
+  //       'products': list.map((e) => e.toJson()),
+  //       'status': 'pending',
+  //       'totalprice': totalPrice,
+  //       'payment': payment,
+  //       'userid': uid,
+  //       'orderId': admin.id,
+  //       'employeeId': uid,
+  //     });
 
-      documentReference.set({
-        'products': list.map((e) => e.toJson()),
-        'status': 'pending',
-        'totalprice': totalPrice,
-        'payment': payment,
-        'userId': uid,
-        'orderId': documentReference.id,
-        'sellerId': uid,
-      });
-      showMessage('Ordered Successfully');
-      Navigator.of(context, rootNavigator: true).pop();
+  //     documentReference.set({
+  //       'products': list.map((e) => e.toJson()),
+  //       'status': 'pending',
+  //       'totalprice': totalPrice,
+  //       'payment': payment,
+  //       'userId': uid,
+  //       'orderId': documentReference.id,
+  //       'employeeId': uid,
+  //     });
+  //     showMessage('Ordered Successfully');
+  //     Navigator.of(context, rootNavigator: true).pop();
 
-      return true;
-    } catch (e) {
-      showMessage(e.toString());
+  //     return true;
+  //   } catch (e) {
+  //     showMessage(e.toString());
 
-      Navigator.of(context, rootNavigator: true).pop();
+  //     Navigator.of(context, rootNavigator: true).pop();
 
-      return false;
-    }
-  }
+  //     return false;
+  //   }
+  // }
 
+//----------------------------------------------------------------
   ///////// get order user //////
 
   Future<List<OrderModel>> getUserOrder() async {
@@ -160,6 +165,7 @@ class FirebaseFirestoreHelper {
     }
   }
 
+//----------------------------------------------------------------
   void updateTokenFromFirebase() async {
     String? token = await FirebaseMessaging.instance.getToken();
     if (token != null) {
@@ -170,6 +176,7 @@ class FirebaseFirestoreHelper {
     }
   }
 
+//----------------------------------------------------------------
   Future<void> updateOrder(OrderModel orderModel, String status) async {
     try {
       DocumentSnapshot orderSnapshot = await _firebaseFirestore
@@ -200,30 +207,33 @@ class FirebaseFirestoreHelper {
     }
   }
 
+//----------------------------------------------------------------
   Future<List<EmployeeModel>> getUserList() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firebaseFirestore
         .collection('employees')
-        .where('id', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .where('employeeId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .get();
     return querySnapshot.docs
         .map((e) => EmployeeModel.fromJson(e.data()))
         .toList();
   }
 
-  Future<List<CategoryModel>> getcategories() async {
-    try {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await _firebaseFirestore.collection('categories').get();
-      List<CategoryModel> categoriesList = querySnapshot.docs
-          .map((e) => CategoryModel.fromJson(e.data()))
-          .toList();
-      return categoriesList;
-    } catch (e) {
-      showMessage(e.toString());
-      return [];
-    }
-  }
+//----------------------------------------------------------------
+  // Future<List<CategoryModel>> getcategories() async {
+  //   try {
+  //     QuerySnapshot<Map<String, dynamic>> querySnapshot =
+  //         await _firebaseFirestore.collection('categories').get();
+  //     List<CategoryModel> categoriesList = querySnapshot.docs
+  //         .map((e) => CategoryModel.fromJson(e.data()))
+  //         .toList();
+  //     return categoriesList;
+  //   } catch (e) {
+  //     showMessage(e.toString());
+  //     return [];
+  //   }
+  // }
 
+//----------------------------------------------------------------
   Future<String> deleteSingleUser(String id) async {
     try {
       _firebaseFirestore.collection('employees').doc(id).delete();
@@ -235,12 +245,12 @@ class FirebaseFirestoreHelper {
 
 // ----------------------------------------------------------------
 
-  Future<void> updateUser(EmployeeModel userModel) async {
+  Future<void> updateUser(EmployeeModel employeeModel) async {
     try {
       await _firebaseFirestore
           .collection('employees')
-          .doc(userModel.id)
-          .update(userModel.toJson());
+          .doc(employeeModel.employeeId)
+          .update(employeeModel.toJson());
     } catch (e) {}
   }
 
@@ -304,6 +314,7 @@ class FirebaseFirestoreHelper {
       print(e.toString());
     }
   }
+
 //----------------------------------------------------------------
   Future<ProductModel> addProduct(
     File image,
@@ -320,7 +331,7 @@ class FirebaseFirestoreHelper {
   ) async {
     DocumentReference<Map<String, dynamic>> reference =
         _firebaseFirestore.collection('products').doc();
-    String sellerId = FirebaseAuth.instance.currentUser!.uid;
+    String employeeId = FirebaseAuth.instance.currentUser!.uid;
     String imageUrl = await FirebaseStorageHelper.instance
         .uploadproductImage(reference.id, image);
     ProductModel addProduct = ProductModel(
@@ -338,7 +349,7 @@ class FirebaseFirestoreHelper {
       isFavorite: false,
       disabled: false,
       productId: reference.id,
-      sellerId: sellerId,
+      employeeId: employeeId,
       startDate: DateTime.now(),
       endDate: DateTime.parse(endDate),
     );
@@ -347,10 +358,11 @@ class FirebaseFirestoreHelper {
   }
 
 ////----------------------------------------------------------------------
-  Stream<EmployeeModel> getSellersInfo({bool? approved, String? role}) {
+
+  Stream<EmployeeModel> getEmployeeInfo({bool? approved, String? role}) {
     Query query = FirebaseFirestore.instance.collection('employees');
-    query = query
-      ..where('sellerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid);
+    query =
+        query.where('id', isEqualTo: FirebaseAuth.instance.currentUser!.uid);
 
     return query.snapshots().map((querySnapshot) {
       if (querySnapshot.docs.isNotEmpty) {
@@ -368,7 +380,7 @@ class FirebaseFirestoreHelper {
   Stream<List<OrderModel>> getOrderListStream({String? status}) {
     CollectionReference<Map<String, dynamic>> ordersCollection =
         _firebaseFirestore.collection('orders')
-          ..where('sellerId',
+          ..where('employeeId',
               isEqualTo: FirebaseAuth.instance.currentUser!.uid);
     Query<Map<String, dynamic>> query = status != null
         ? ordersCollection.where('status', isEqualTo: status)
@@ -396,7 +408,7 @@ class FirebaseFirestoreHelper {
     QuerySnapshot<Map<String, dynamic>> completedOrders =
         await _firebaseFirestore
             .collection('orders')
-            .where('sellerId',
+            .where('employeeId',
                 isEqualTo: FirebaseAuth.instance.currentUser!.uid)
             .where('status', isEqualTo: 'completed')
             .get();
@@ -412,7 +424,10 @@ class FirebaseFirestoreHelper {
 
     try {
       DocumentSnapshot<Map<String, dynamic>> sellerSnapshot =
-          await _firebaseFirestore.collection('employees').doc(deliveryId).get();
+          await _firebaseFirestore
+              .collection('employees')
+              .doc(deliveryId)
+              .get();
 
       if (sellerSnapshot.exists) {
         String deliveryName = sellerSnapshot['firstName'];
@@ -426,7 +441,7 @@ class FirebaseFirestoreHelper {
             .doc(orderModel.orderId)
             .update({
           'status': status,
-          'delivery': deliveryId,
+          'deliveryId': deliveryId,
           'deliveryName': deliveryName,
           'deliveryPhone': deliveryPhone,
         });
@@ -436,7 +451,7 @@ class FirebaseFirestoreHelper {
             .doc(orderModel.orderId)
             .update({
           'status': status,
-          'delivery': deliveryId,
+          'deliveryId': deliveryId,
           'deliveryName': deliveryName,
           'deliveryPhone': deliveryPhone,
         });

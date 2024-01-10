@@ -170,10 +170,10 @@ class AppProvider with ChangeNotifier {
 
   double _totalEarning = 0.0;
 
-  Future<void> getUserListFunction() async {
-    _categoryList = await FirebaseFirestoreHelper.instance.getcategories();
-    notifyListeners();
-  }
+  // Future<void> getUserListFunction() async {
+  //   _categoryList = await FirebaseFirestoreHelper.instance.getcategories();
+  //   notifyListeners();
+  // }
 
   Future<void> getCategoryListFunction() async {
     _userList = await FirebaseFirestoreHelper.instance.getUserList();
@@ -213,7 +213,7 @@ class AppProvider with ChangeNotifier {
   Future<void> deleteUserFromFirebase(EmployeeModel EmployeeModel) async {
     notifyListeners();
     String value = await FirebaseFirestoreHelper.instance
-        .deleteSingleUser(EmployeeModel.id!);
+        .deleteSingleUser(EmployeeModel.employeeId!);
 
     if (value == 'Successfully deleted') {
       _userList.remove(EmployeeModel);
@@ -233,7 +233,7 @@ class AppProvider with ChangeNotifier {
   // List<OrderModel> get getAllOrderList => _allOrders;
 
   Future<void> callBackFunction() async {
-    await getUserListFunction();
+    //await getUserListFunction();
     await getCategoryListFunction();
     // await getProduct();
     await getCompletedOrderList();
@@ -350,6 +350,14 @@ class AppProvider with ChangeNotifier {
     showMessage('Order canceled from delivery');
   }
 
+//   Stream<List<String>> getCategoriesStream() {
+//   Stream<QuerySnapshot> _categoriesStream =
+//       FirebaseFirestore.instance.collection('categories').snapshots();
 
-  
+//   return _categoriesStream.map((snapshot) {
+//     return snapshot.docs.map((doc) {
+//       return doc.get('name') as String; // Assuming 'name' is the field containing category names
+//     }).toList();
+//   });
+// }
 }

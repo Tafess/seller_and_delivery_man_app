@@ -8,7 +8,6 @@ import 'package:sellers/constants/custom_text.dart';
 import 'package:sellers/constants/routes.dart';
 import 'package:sellers/controllers/firebase_firestore_helper.dart';
 import 'package:sellers/delivery/google_map.dart';
-import 'package:sellers/delivery/qr_code_scanner.dart';
 import 'package:sellers/models/order_model.dart';
 
 class OrderListView extends StatefulWidget {
@@ -23,7 +22,7 @@ class OrderListView extends StatefulWidget {
 class _OrderListViewState extends State<OrderListView> {
   final FirebaseFirestoreHelper _firestoreHelper = FirebaseFirestoreHelper();
 
- // final QrCodeScanner _qrScanner = QrCodeScanner();
+  // final QrCodeScanner _qrScanner = QrCodeScanner();
 
   @override
   Widget build(BuildContext context) {
@@ -233,16 +232,16 @@ class _OrderListViewState extends State<OrderListView> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> updateDeliveryOrder(OrderModel orderModel, String status) async {
-    String deliveryId = FirebaseAuth.instance.currentUser!.uid;
+   String deliveryId = FirebaseAuth.instance.currentUser!.uid;
 
     try {
       DocumentSnapshot<Map<String, dynamic>> sellerSnapshot =
-          await _firestore.collection('sellers').doc(deliveryId).get();
+          await _firestore.collection('employees').doc(deliveryId).get();
 
       if (sellerSnapshot.exists) {
         String deliveryName = sellerSnapshot['firstName'];
         String deliveryPhone = sellerSnapshot['phoneNumber'];
-
+        String deliveryId = sellerSnapshot['employeeId'];
         String userIdFromDatabase = orderModel.userId;
         await _firestore
             .collection('userOrders')
@@ -251,14 +250,14 @@ class _OrderListViewState extends State<OrderListView> {
             .doc(orderModel.orderId)
             .update({
           'status': status,
-          'delivery': deliveryId,
+          'deliveryId': deliveryId,
           'deliveryName': deliveryName,
           'deliveryPhone': deliveryPhone,
         });
 
         await _firestore.collection('orders').doc(orderModel.orderId).update({
           'status': status,
-          'delivery': deliveryId,
+          'deliveryId': deliveryId,
           'deliveryName': deliveryName,
           'deliveryPhone': deliveryPhone,
         });
@@ -423,6 +422,7 @@ class _OrderListViewState extends State<OrderListView> {
       updateOrderStatus(order);
     }
   }
+
 }
 
 
