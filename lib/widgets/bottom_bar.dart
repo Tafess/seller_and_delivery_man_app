@@ -6,6 +6,7 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sellers/controllers/firebase_auth_helper.dart';
 import 'package:sellers/controllers/firebase_firestore_helper.dart';
 import 'package:sellers/delivery/delivery_home.dart';
+import 'package:sellers/delivery/orders.dart';
 import 'package:sellers/models/employee_model.dart';
 import 'package:sellers/screens/home.dart';
 import 'package:sellers/screens/landing_screen.dart';
@@ -30,8 +31,8 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
 
   List<Widget> _buildScreens() => [
         _getHomeScreen(),
-        ProductView(),
-        OrdersScreen(),
+        _getProductScreen(),
+        _getOrdersScreen(),
       ];
 
   List<PersistentBottomNavBarItem> _navBarsItems() => [
@@ -153,4 +154,68 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
       },
     );
   }
+
+ Widget _getProductScreen() {
+    return StreamBuilder<EmployeeModel>(
+      stream: _firestore.getEmployeeInfo(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          EmployeeModel? employee = snapshot.data;
+          print('Seller: $employee');
+          print(FirebaseAuth.instance.currentUser!.uid);
+
+          if (employee != null) {
+            print('Role: ${employee.role}, Approved: ${employee.approved}');
+
+            if (employee.role == 'delivery' && employee.approved == true) {
+              return DeliveryHomeScreen();
+            } else if (employee.role == 'seller' && employee.approved == true) {
+              return HomePage();
+            } else {
+              return LandingScreen();
+            }
+          } else {
+            return Login();
+          }
+        }
+      },
+    );
+  }
+
+ Widget _getOrdersScreen() {
+    return StreamBuilder<EmployeeModel>(
+      stream: _firestore.getEmployeeInfo(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          EmployeeModel? employee = snapshot.data;
+          print('Seller: $employee');
+          print(FirebaseAuth.instance.currentUser!.uid);
+
+          if (employee != null) {
+            print('Role: ${employee.role}, Approved: ${employee.approved}');
+
+            if (employee.role == 'delivery' && employee.approved == true) {
+              return DeliveryOrdersScreen();
+            } else if (employee.role == 'seller' && employee.approved == true) {
+              return OrdersScreen();
+            } else {
+              return LandingScreen();
+            }
+          } else {
+            return Login();
+          }
+        }
+      },
+    );
+  }
+
+
 }

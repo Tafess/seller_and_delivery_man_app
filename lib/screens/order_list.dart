@@ -112,14 +112,14 @@ class _OrderListViewState extends State<OrderListView> {
                               height: 30,
                               width: 30,
                               child: Image.network(
-                                order.products[0].image,
+                                order.products![0].image,
                                 fit: BoxFit.cover,
                               ),
                             ),
                           ),
                           DataCell(
                             Text(
-                              order.products[0].name,
+                              order.products![0].name,
                               style: TextStyle(
                                 overflow: TextOverflow.ellipsis,
                                 fontSize: 14,
@@ -128,7 +128,7 @@ class _OrderListViewState extends State<OrderListView> {
                             ),
                           ),
                           DataCell(
-                            order.products.length > 1
+                            order.products!.length > 1
                                 ? IconButton(
                                     icon: Icon(
                                       Icons.keyboard_arrow_down_sharp,
@@ -139,7 +139,7 @@ class _OrderListViewState extends State<OrderListView> {
                                     },
                                   )
                                 : Text(
-                                    order.products[0].quantity.toString(),
+                                    order.products![0].quantity.toString(),
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.black,
@@ -232,7 +232,7 @@ class _OrderListViewState extends State<OrderListView> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> updateDeliveryOrder(OrderModel orderModel, String status) async {
-   String deliveryId = FirebaseAuth.instance.currentUser!.uid;
+    String deliveryId = FirebaseAuth.instance.currentUser!.uid;
 
     try {
       DocumentSnapshot<Map<String, dynamic>> sellerSnapshot =
@@ -242,7 +242,7 @@ class _OrderListViewState extends State<OrderListView> {
         String deliveryName = sellerSnapshot['firstName'];
         String deliveryPhone = sellerSnapshot['phoneNumber'];
         String deliveryId = sellerSnapshot['employeeId'];
-        String userIdFromDatabase = orderModel.userId;
+        String? userIdFromDatabase = orderModel.userId;
         await _firestore
             .collection('userOrders')
             .doc(userIdFromDatabase)
@@ -334,7 +334,7 @@ class _OrderListViewState extends State<OrderListView> {
                   DataColumn(label: Text('Quantity')),
                   DataColumn(label: Text('Total(ETB)')),
                 ],
-                rows: order.products.map((singleProduct) {
+                rows: order.products!.map((singleProduct) {
                   return DataRow(cells: [
                     DataCell(
                       Container(
@@ -422,7 +422,6 @@ class _OrderListViewState extends State<OrderListView> {
       updateOrderStatus(order);
     }
   }
-
 }
 
 

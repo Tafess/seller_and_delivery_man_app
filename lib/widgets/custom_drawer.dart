@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sellers/constants/routes.dart';
+import 'package:sellers/controllers/firebase_firestore_helper.dart';
 import 'package:sellers/providers/app_provider.dart';
 import 'package:sellers/screens/change_password_screen.dart';
 import 'package:sellers/screens/favorite_screen.dart';
@@ -14,6 +15,7 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppProvider appProvider = Provider.of<AppProvider>(context);
+    final FirebaseFirestoreHelper _firestoreHelper=FirebaseFirestoreHelper();
 
     return Drawer(
       width: 240,
@@ -34,6 +36,7 @@ class CustomDrawer extends StatelessWidget {
                   color: Colors.deepOrange.shade400.withOpacity(0.9),
                 ),
                 accountName: Text(
+                  
                   appProvider.getUserList.isNotEmpty
                       ? appProvider.getUserList.first.firstName ?? ''
                       : '',

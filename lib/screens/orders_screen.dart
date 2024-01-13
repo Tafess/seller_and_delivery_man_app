@@ -23,7 +23,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       context,
     );
     return DefaultTabController(
-      length: 3,
+      length: 4,
       initialIndex: 0,
       child: Scaffold(
         appBar: AppBar(
@@ -36,7 +36,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             // if (appProvider.getUserList.first.role == 'seller')
             //   const Expanded(
             //       child:
-            //           OrderCountIndicator(title: 'All', color: Colors.black54)),
+            OrderCountIndicator(title: 'All', color: Colors.black54),
             OrderCountIndicator(title: 'pending', color: Colors.orange),
             OrderCountIndicator(title: 'delivery', color: Colors.blue),
             OrderCountIndicator(title: 'completed', color: Colors.green),
@@ -48,11 +48,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
             labelPadding: EdgeInsets.symmetric(horizontal: 20),
             tabs: [
               // if (appProvider.getUserList.first.role == 'seller')
-              //   const Tab(
-              //     child: Text('All',
-              //         style: TextStyle(
-              //             color: Colors.black, fontWeight: FontWeight.normal)),
-              //   ),
+                 Tab(
+                  child: Text('All',
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.normal)),
+                ),
               Tab(
                 child: Text('Pending',
                     style: TextStyle(
@@ -75,7 +75,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         body: const TabBarView(
           children: [
             // if (appProvider.getUserList.first.role == 'seller')
-            //   const OrderListView(title: 'All'),
+            OrderListView(title: 'All'),
             OrderListView(title: 'Pending'),
             OrderListView(title: 'Delivery'),
             OrderListView(title: 'Completed'),

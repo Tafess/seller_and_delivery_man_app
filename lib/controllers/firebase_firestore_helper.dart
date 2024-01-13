@@ -345,7 +345,6 @@ class FirebaseFirestoreHelper {
       quantity: int.parse(quantity),
       size: double.parse(size),
       measurement: measurement,
-      status: 'pending',
       isFavorite: false,
       disabled: false,
       productId: reference.id,
@@ -359,12 +358,13 @@ class FirebaseFirestoreHelper {
 
 ////----------------------------------------------------------------------
 
-  Stream<EmployeeModel> getEmployeeInfo({bool? approved, String? role}) {
-    Query query = FirebaseFirestore.instance.collection('employees');
-    query =
-        query.where('id', isEqualTo: FirebaseAuth.instance.currentUser!.uid);
+Stream<EmployeeModel> getEmployeeInfo({bool? approved, String? role}) {
+  try {
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection('employees');
+    query = query.where('id', isEqualTo: FirebaseAuth.instance.currentUser!.uid);
 
-    return query.snapshots().map((querySnapshot) {
+    return query.snapshots().map((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
       if (querySnapshot.docs.isNotEmpty) {
         var doc = querySnapshot.docs.first;
         EmployeeModel employeeModel =
@@ -374,13 +374,18 @@ class FirebaseFirestoreHelper {
         return EmployeeModel(approved: approved!, role: role!);
       }
     });
+  } catch (e) {
+    print('Error creating stream for employee info: $e');
+
+    return Stream<EmployeeModel>.empty();
   }
+}
+
 
 //-----------------------------------------------------------------------
   Stream<List<OrderModel>> getOrderListStream({String? status}) {
     CollectionReference<Map<String, dynamic>> ordersCollection =
-        _firebaseFirestore.collection('orders')
-          ..where('employeeId',
+        _firebaseFirestore.collection('orders') ..where('employeeId',
               isEqualTo: FirebaseAuth.instance.currentUser!.uid);
     Query<Map<String, dynamic>> query = status != null
         ? ordersCollection.where('status', isEqualTo: status)
@@ -396,15 +401,35 @@ class FirebaseFirestoreHelper {
   //----------------------------------------------------------------
 
   Stream<int> getOrderCountByStatus(String status) {
-    return _firebaseFirestore
-        .collection('orders')
-        .where('status', isEqualTo: status)
-        .snapshots()
-        .map((querySnapshot) => querySnapshot.size);
+  try {
+    return _firebaseFirestore.collection('orders').snapshots().map(
+        (querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs
+            .where((doc) => doc['status'] == status)
+            .length;
+      } else {
+        return 0;
+      }
+    });
+  } catch (e) {
+    print('Error creating stream for order count: $e');
+    return Stream<int>.empty();
   }
+}
 
   //----------------------------------------------------------------
-  Future<List<OrderModel>> getCompletedOrderList() async {
+ Future<List<OrderModel>> getCompletedOrderList() async {
+  try {
+ 
+    QuerySnapshot<Map<String, dynamic>> collectionCheck =
+        await _firebaseFirestore.collection('orders').limit(1).get();
+
+    if (collectionCheck.docs.isEmpty) {
+   
+      return [];
+    }
+
     QuerySnapshot<Map<String, dynamic>> completedOrders =
         await _firebaseFirestore
             .collection('orders')
@@ -413,10 +438,17 @@ class FirebaseFirestoreHelper {
             .where('status', isEqualTo: 'completed')
             .get();
 
-    List<OrderModel> completedOrderList =
-        completedOrders.docs.map((e) => OrderModel.fromJson(e.data())).toList();
+    List<OrderModel> completedOrderList = completedOrders.docs
+        .map((e) => OrderModel.fromJson(e.data() as Map<String, dynamic>))
+        .toList();
+
     return completedOrderList;
+  } catch (e) {
+    print('Error getting completed orders: $e');
+    return [];
   }
+}
+
 
 //----------------------------------------------------------------
   Future<void> updateDeliveryOrder(OrderModel orderModel, String status) async {
@@ -433,7 +465,7 @@ class FirebaseFirestoreHelper {
         String deliveryName = sellerSnapshot['firstName'];
         String deliveryPhone = sellerSnapshot['phoneNumber'];
 
-        String userIdFromDatabase = orderModel.userId;
+        String? userIdFromDatabase = orderModel.userId;
         await _firebaseFirestore
             .collection('userOrders')
             .doc(userIdFromDatabase)

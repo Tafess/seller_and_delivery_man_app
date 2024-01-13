@@ -48,7 +48,6 @@ class _AddProductState extends State<AddProduct> {
   TextEditingController size = TextEditingController();
   TextEditingController measurement = TextEditingController();
 
-  Object? _selectedCategory;
   List<String> measurments = ['gram', 'ML'];
   String? _selectedUnit;
   bool isDiscountEnabled = false;
@@ -81,12 +80,12 @@ class _AddProductState extends State<AddProduct> {
     ;
   }
 
-  String? gategoryId;
+  String? selectedCategoryId;
+  String? selectedCategoryName;
+
   Future<QuerySnapshot?> getCategoriesList() async {
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection('categories').get();
-   
-    gategoryId = querySnapshot.docs.first.get('id');
     return querySnapshot;
   }
 
@@ -99,7 +98,7 @@ class _AddProductState extends State<AddProduct> {
     return Form(
       key: _formKey,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Product adding...')),
+        appBar: AppBar(title: const Text('Add Product ')),
         // drawer: CustomDrawer(),
         body: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -139,24 +138,31 @@ class _AddProductState extends State<AddProduct> {
               },
             ),
             const SizedBox(height: 12),
-
             FutureBuilder<QuerySnapshot?>(
                 future: getCategoriesList(),
                 builder: (context, snapshot) {
-                  return DropdownButton(
-                    value: _selectedCategory,
-                    hint: Text('Select  Category'),
-                    items: snapshot.data!.docs.map((e) {
-                      return DropdownMenuItem<String>(
-                        value: e['name'],
-                        child: Text(e['name']),
-                      );
-                    }).toList(),
-                    onChanged: (selectedCategory) {
-                      setState(() {
-                        _selectedCategory = selectedCategory;
-                      });
-                    },
+                  return Column(
+                    children: [
+                      DropdownButtonFormField<String>(
+                        value: selectedCategoryName,
+                        hint: Text('Select Category'),
+                        items: snapshot.data!.docs.map((e) {
+                          return DropdownMenuItem<String>(
+                            value: e['name'],
+                            child: Text(e['name']),
+                          );
+                        }).toList(),
+                        onChanged: (selectedCategory) {
+                          setState(() {
+                            selectedCategoryName = selectedCategory;
+                            selectedCategoryId = snapshot.data!.docs
+                                .firstWhere(
+                                    (doc) => doc['name'] == selectedCategory)
+                                .get('id');
+                          });
+                        },
+                      )
+                    ],
                   );
                 }),
             const SizedBox(height: 12),
@@ -305,23 +311,29 @@ class _AddProductState extends State<AddProduct> {
             const SizedBox(height: 20),
             SizedBox(
                 child: CustomButton(
+                    color: Colors.green.shade300,
                     onPressed: () async {
                       if (image == null) {
                         customSnackbar(
                             context: context,
                             message: 'Please add image of product',
                             backgroundColor: Colors.red);
-                      } else if (_selectedCategory == null) {
-                        snackBar(context, 'Category not selected');
+                      } else if (selectedCategoryName == null) {
+                        customSnackbar(
+                            context: context,
+                            message: 'Category not selected',
+                            backgroundColor: Colors.red);
                       } else if (_selectedUnit == null) {
-                        showMessage('Measurment unit not selected');
+                        customSnackbar(
+                            message: 'Measurment unit not selected',
+                            context: context);
                       } else if (image != null &&
                           _formKey.currentState!.validate()) {
                         appProvider.addProduct(
                           image!,
                           name.text,
                           description.text,
-                          gategoryId!,
+                          selectedCategoryId!,
                           price.text.toString(),
                           discount.text.toString(),
                           quantity.text.toString(),
@@ -330,16 +342,21 @@ class _AddProductState extends State<AddProduct> {
                           startDate.toString(),
                           endDate.toString(),
                         );
-                        showMessage('Product successfully Added');
+                        customSnackbar(
+                            context: context,
+                            message: 'Product successfully Added',
+                            backgroundColor: Colors.green.shade400);
                         setState(() {
                           image = null;
                           name.clear();
                           description.clear();
-                          _selectedCategory = null;
                           price.clear();
                           discount.clear();
                           quantity.clear();
                           size.clear();
+                          endDate = null;
+                          startDate = null;
+                          selectedCategoryName = null;
                           _selectedUnit = null;
                         });
                       }

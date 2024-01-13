@@ -189,7 +189,7 @@ class AppProvider with ChangeNotifier {
     _completedOrders =
         await FirebaseFirestoreHelper.instance.getCompletedOrderList();
     for (var element in _completedOrders) {
-      _totalEarning += element.totalprice;
+      _totalEarning += element.totalprice!;
     }
     notifyListeners();
   }

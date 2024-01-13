@@ -11,7 +11,6 @@ class ProductModel {
   int quantity;
   double size;
   String measurement;
-  String status;
   bool isFavorite;
   bool disabled;
   String productId;
@@ -30,7 +29,6 @@ class ProductModel {
     required this.quantity,
     required this.size,
     required this.measurement,
-    required this.status,
     required this.isFavorite,
     required this.disabled,
     required this.productId,
@@ -51,7 +49,6 @@ class ProductModel {
       quantity: (json['quantity'] as num?)?.toInt() ?? 1,
       size: (json['size'] as num?)?.toDouble() ?? 0.0,
       measurement: json['measurement'] ?? '',
-      status: json['status'] ?? '',
       isFavorite: false,
       disabled: json['disabled'] ?? false,
       productId: json['productId'] ?? '',
@@ -74,7 +71,6 @@ class ProductModel {
       'quantity': quantity,
       'size': size,
       'measurement': measurement,
-      'status': status,
       'isFavorite': false,
       'disabled': false,
       'productId': productId,
@@ -106,7 +102,6 @@ class ProductModel {
       quantity: quantity ?? this.quantity,
       size: size ?? this.size,
       measurement: measurement ?? this.measurement,
-      status: status,
       isFavorite: false,
       disabled: false,
       productId: productId,

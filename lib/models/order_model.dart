@@ -1,12 +1,12 @@
 import 'package:sellers/models/product_model.dart';
 
 class OrderModel {
-  String payment;
+  String? payment;
   String status;
-  List<ProductModel> products;
-  double totalprice;
+  List<ProductModel>? products;
+  double? totalprice;
   String orderId;
-  String userId;
+  String? userId;
   String? address;
   double? latitude;
   double? longitude;
@@ -16,12 +16,12 @@ class OrderModel {
   String? deliveryPhone;
 
   OrderModel({
-    required this.totalprice,
+     this.totalprice,
     required this.orderId,
-    required this.payment,
-    required this.products,
-    required this.status,
-    required this.userId,
+     this.payment,
+     this.products,
+   required  this.status,
+     this.userId,
     this.address,
     this.latitude,
     this.longitude,
