@@ -65,7 +65,7 @@ class EmployeeModel {
         'idCard': idCard,
         'approved': false,
         'role': role,
-        'id': employeeId,
+        'employeeId': employeeId,
         'firstName': firstName,
         'middleName': middleName,
         'lastName': lastName,

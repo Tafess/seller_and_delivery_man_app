@@ -53,8 +53,7 @@ class FirebaseFirestoreHelper {
   Future<List<ProductModel>> getProducts() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firebaseFirestore
         .collectionGroup('products')
-        .where('employeeId',
-            isEqualTo: 'FirebaseAuth.instance.currentUser!.uid')
+        .where('id', isEqualTo: 'FirebaseAuth.instance.currentUser!.uid')
         .get();
 
     List<ProductModel> productList =
@@ -211,7 +210,7 @@ class FirebaseFirestoreHelper {
   Future<List<EmployeeModel>> getUserList() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firebaseFirestore
         .collection('employees')
-        .where('employeeId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .where('id', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .get();
     return querySnapshot.docs
         .map((e) => EmployeeModel.fromJson(e.data()))
@@ -358,34 +357,37 @@ class FirebaseFirestoreHelper {
 
 ////----------------------------------------------------------------------
 
-Stream<EmployeeModel> getEmployeeInfo({bool? approved, String? role}) {
-  try {
-    Query<Map<String, dynamic>> query =
-        FirebaseFirestore.instance.collection('employees');
-    query = query.where('id', isEqualTo: FirebaseAuth.instance.currentUser!.uid);
+  Stream<EmployeeModel> getEmployeeInfo({bool? approved, String? role}) {
+    try {
+      Query<Map<String, dynamic>> query =
+          FirebaseFirestore.instance.collection('employees');
+      query = query.where('employeeId',
+          isEqualTo: FirebaseAuth.instance.currentUser!.uid);
 
-    return query.snapshots().map((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-      if (querySnapshot.docs.isNotEmpty) {
-        var doc = querySnapshot.docs.first;
-        EmployeeModel employeeModel =
-            EmployeeModel.fromJson(doc.data() as Map<String, dynamic>);
-        return employeeModel;
-      } else {
-        return EmployeeModel(approved: approved!, role: role!);
-      }
-    });
-  } catch (e) {
-    print('Error creating stream for employee info: $e');
+      return query
+          .snapshots()
+          .map((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+        if (querySnapshot.docs.isNotEmpty) {
+          var doc = querySnapshot.docs.first;
+          EmployeeModel employeeModel =
+              EmployeeModel.fromJson(doc.data() as Map<String, dynamic>);
+          return employeeModel;
+        } else {
+          return EmployeeModel(approved: approved!, role: role!);
+        }
+      });
+    } catch (e) {
+      print('Error creating stream for employee info: $e');
 
-    return Stream<EmployeeModel>.empty();
+      return Stream<EmployeeModel>.empty();
+    }
   }
-}
-
 
 //-----------------------------------------------------------------------
   Stream<List<OrderModel>> getOrderListStream({String? status}) {
     CollectionReference<Map<String, dynamic>> ordersCollection =
-        _firebaseFirestore.collection('orders') ..where('employeeId',
+        _firebaseFirestore.collection('orders')
+          ..where('employeeId',
               isEqualTo: FirebaseAuth.instance.currentUser!.uid);
     Query<Map<String, dynamic>> query = status != null
         ? ordersCollection.where('status', isEqualTo: status)
@@ -401,54 +403,53 @@ Stream<EmployeeModel> getEmployeeInfo({bool? approved, String? role}) {
   //----------------------------------------------------------------
 
   Stream<int> getOrderCountByStatus(String status) {
-  try {
-    return _firebaseFirestore.collection('orders').snapshots().map(
-        (querySnapshot) {
-      if (querySnapshot.docs.isNotEmpty) {
-        return querySnapshot.docs
-            .where((doc) => doc['status'] == status)
-            .length;
-      } else {
-        return 0;
-      }
-    });
-  } catch (e) {
-    print('Error creating stream for order count: $e');
-    return Stream<int>.empty();
+    try {
+      return _firebaseFirestore
+          .collection('orders')
+          .snapshots()
+          .map((querySnapshot) {
+        if (querySnapshot.docs.isNotEmpty) {
+          return querySnapshot.docs
+              .where((doc) => doc['status'] == status)
+              .length;
+        } else {
+          return 0;
+        }
+      });
+    } catch (e) {
+      print('Error creating stream for order count: $e');
+      return Stream<int>.empty();
+    }
   }
-}
 
   //----------------------------------------------------------------
- Future<List<OrderModel>> getCompletedOrderList() async {
-  try {
- 
-    QuerySnapshot<Map<String, dynamic>> collectionCheck =
-        await _firebaseFirestore.collection('orders').limit(1).get();
+  Future<List<OrderModel>> getCompletedOrderList() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> collectionCheck =
+          await _firebaseFirestore.collection('orders').limit(1).get();
 
-    if (collectionCheck.docs.isEmpty) {
-   
+      if (collectionCheck.docs.isEmpty) {
+        return [];
+      }
+
+      QuerySnapshot<Map<String, dynamic>> completedOrders =
+          await _firebaseFirestore
+              .collection('orders')
+              .where('employeeId',
+                  isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+              .where('status', isEqualTo: 'completed')
+              .get();
+
+      List<OrderModel> completedOrderList = completedOrders.docs
+          .map((e) => OrderModel.fromJson(e.data() as Map<String, dynamic>))
+          .toList();
+
+      return completedOrderList;
+    } catch (e) {
+      print('Error getting completed orders: $e');
       return [];
     }
-
-    QuerySnapshot<Map<String, dynamic>> completedOrders =
-        await _firebaseFirestore
-            .collection('orders')
-            .where('employeeId',
-                isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-            .where('status', isEqualTo: 'completed')
-            .get();
-
-    List<OrderModel> completedOrderList = completedOrders.docs
-        .map((e) => OrderModel.fromJson(e.data() as Map<String, dynamic>))
-        .toList();
-
-    return completedOrderList;
-  } catch (e) {
-    print('Error getting completed orders: $e');
-    return [];
   }
-}
-
 
 //----------------------------------------------------------------
   Future<void> updateDeliveryOrder(OrderModel orderModel, String status) async {

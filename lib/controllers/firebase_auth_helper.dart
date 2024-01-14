@@ -106,7 +106,7 @@ class FirebaseAuthHelper {
           .uploadEmployeeIdCard(reference.id, idCard);
 
       String profileUrl = await FirebaseStorageHelper.instance
-          .uploadEmployeeIdCard(reference.id, idCard);
+          .uploadEmployeeProfile(reference.id, profile);
 
       EmployeeModel employeeModel = EmployeeModel(
         employeeId: userCredential.user!.uid,
@@ -171,11 +171,11 @@ class FirebaseAuthHelper {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
-          EmployeeModel? seller = snapshot.data;
-          if (seller != null) {
-            return (seller.role == 'delivery' && seller.approved == true)
+          EmployeeModel? employee = snapshot.data;
+          if (employee != null) {
+            return (employee.role == 'delivery' && employee.approved == true)
                 ? DeliveryHomeScreen()
-                : (seller.role == 'seller' && seller.approved == true)
+                : (employee.role == 'seller' && employee.approved == true)
                     ? HomePage()
                     : LandingScreen();
           } else {

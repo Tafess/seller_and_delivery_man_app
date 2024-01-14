@@ -35,7 +35,7 @@ class FirebaseStorageHelper {
   Future<String> uploadEmployeeIdCard(String userId, File idCard) async {
     String fileName = DateTime.now().millisecondsSinceEpoch.toString();
     TaskSnapshot taskSnapshot =
-        await _storage.ref('employeImages/$userId/$fileName').putFile(idCard);
+        await _storage.ref('employeIdCard/$userId/$fileName').putFile(idCard);
     String idCarduri = await taskSnapshot.ref.getDownloadURL();
     return idCarduri;
   }
@@ -43,7 +43,7 @@ class FirebaseStorageHelper {
   Future<String> uploadEmployeeProfile(String userId, File profile) async {
     String fileName = DateTime.now().millisecondsSinceEpoch.toString();
     TaskSnapshot taskSnapshot =
-        await _storage.ref('employeImages/$userId/$fileName').putFile(profile);
+        await _storage.ref('employeProfile/$userId/$fileName').putFile(profile);
     String profileUri = await taskSnapshot.ref.getDownloadURL();
     return profileUri;
   }

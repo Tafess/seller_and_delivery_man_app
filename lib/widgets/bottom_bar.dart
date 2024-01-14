@@ -131,23 +131,28 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
+          print('Error: ${snapshot.error}');
           return Text('Error: ${snapshot.error}');
         } else {
           EmployeeModel? employee = snapshot.data;
-          print('Seller: $employee');
-          print(FirebaseAuth.instance.currentUser!.uid);
+          print('Employee: $employee');
+          print('Current User ID: ${FirebaseAuth.instance.currentUser!.uid}');
 
           if (employee != null) {
             print('Role: ${employee.role}, Approved: ${employee.approved}');
 
             if (employee.role == 'delivery' && employee.approved == true) {
+              print('Navigating to DeliveryHomeScreen');
               return DeliveryHomeScreen();
             } else if (employee.role == 'seller' && employee.approved == true) {
+              print('Navigating to HomePage');
               return HomePage();
             } else {
+              print('Navigating to LandingScreen');
               return LandingScreen();
             }
           } else {
+            print('Navigating to Login');
             return Login();
           }
         }
@@ -155,7 +160,7 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
     );
   }
 
- Widget _getProductScreen() {
+  Widget _getProductScreen() {
     return StreamBuilder<EmployeeModel>(
       stream: _firestore.getEmployeeInfo(),
       builder: (context, snapshot) {
@@ -174,7 +179,7 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
             if (employee.role == 'delivery' && employee.approved == true) {
               return DeliveryHomeScreen();
             } else if (employee.role == 'seller' && employee.approved == true) {
-              return HomePage();
+              return ProductView();
             } else {
               return LandingScreen();
             }
@@ -186,7 +191,7 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
     );
   }
 
- Widget _getOrdersScreen() {
+  Widget _getOrdersScreen() {
     return StreamBuilder<EmployeeModel>(
       stream: _firestore.getEmployeeInfo(),
       builder: (context, snapshot) {
@@ -216,6 +221,4 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
       },
     );
   }
-
-
 }
